@@ -1,98 +1,189 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// app/(tabs)/index.tsx
+import { COLOURS } from "@/constants/Colours";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.appName}>Tuning Fork</Text>
+        <Text style={styles.tagline}>Catch the vibe 🎶</Text>
+      </View>
+
+      {/* Main Card - tappable */}
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.85}
+        onPress={() => router.push("/screens/ListeningState")}
+      >
+        {/* Triple ring circle */}
+        <View style={styles.bigCircle}>
+          <View style={styles.middleCircle}>
+            <View style={styles.innerCircle}>
+              <Ionicons
+                name="musical-notes"
+                size={64}
+                color={COLOURS.brightYellow}
+              />
+            </View>
+          </View>
+        </View>
+
+        <Text style={styles.cardTitle}>Tap to Identify</Text>
+        <Text style={styles.cardSubtitle}>
+          Listen to the music around you{"\n"} and find your next favourite
+          {"\n"} song to learn
+        </Text>
+      </TouchableOpacity>
+
+      {/* Hum or Sing - separate row card */}
+      <TouchableOpacity
+        style={styles.humRow}
+        activeOpacity={0.8}
+        onPress={() => {}}
+      >
+        <View style={styles.humIconBox}>
+          <Ionicons name="mic" size={22} color={COLOURS.darkBackground} />
+        </View>
+        <View style={styles.humText}>
+          <Text style={styles.humTitle}>Hum or Sing</Text>
+          <Text style={styles.humSubtitle}>Cant remember the lyrics?</Text>
+        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={COLOURS.darkBackground}
+        />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: COLOURS.darkBackground,
+    paddingHorizontal: 24,
+    paddingBottom: 100,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  // Header
+  header: {
+    marginTop: 20,
+    marginBottom: 28,
+    alignItems: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  appName: {
+    fontSize: 48,
+    fontFamily: "WinkyMilky",
+    color: COLOURS.brightYellow,
+    letterSpacing: 1,
+    textAlign: "center",
+  },
+  tagline: {
+    fontSize: 16,
+    fontFamily: "Inter_400Regular",
+    color: COLOURS.lightPurple,
+    marginTop: 7,
+    textAlign: "center",
+  },
+
+  // Main card
+  card: {
+    flex: 1,
+    backgroundColor: COLOURS.primaryPurple,
+    borderRadius: 36,
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16, // 👈 gap between card and hum row
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+
+  // Triple ring circle
+  bigCircle: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: "rgba(249, 239, 189, 0.07)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 32,
+  },
+  middleCircle: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: "rgba(249, 239, 189, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  innerCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(249, 239, 189, 0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardTitle: {
+    fontSize: 32,
+    fontFamily: "Inter_700Bold",
+    color: COLOURS.brightYellow,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  cardSubtitle: {
+    fontSize: 15,
+    fontFamily: "Inter_400Regular",
+    color: COLOURS.lightPurple,
+    textAlign: "center",
+    lineHeight: 24,
+  },
+
+  // Hum or Sing row
+  humRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLOURS.brightYellow, // 👈 yellow
+    borderRadius: 20,
+    padding: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    gap: 14,
+  },
+  humIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "rgba(39, 40, 50, 0.15)", // subtle dark tint on yellow
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  humText: {
+    flex: 1,
+  },
+  humTitle: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 15,
+    color: COLOURS.darkBackground,
+  },
+  humSubtitle: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    color: COLOURS.darkBackground,
+    opacity: 0.6,
+    marginTop: 2,
   },
 });
