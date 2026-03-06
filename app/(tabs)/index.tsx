@@ -20,7 +20,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.85}
-        onPress={() => router.push("/screens/ListeningState")}
+        onPress={() => router.push("/screens/ErrorRetry")}
       >
         {/* Triple ring circle */}
         <View style={styles.bigCircle}>
