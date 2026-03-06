@@ -20,7 +20,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.85}
-        onPress={() => router.push("/screens/ErrorRetry")}
+        onPress={() => router.push("/screens/SongResult")}
       >
         {/* Triple ring circle */}
         <View style={styles.bigCircle}>
@@ -77,21 +77,21 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 20,
     marginBottom: 28,
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   appName: {
     fontSize: 48,
     fontFamily: "WinkyMilky",
     color: COLOURS.brightYellow,
     letterSpacing: 1,
-    textAlign: "center",
+    textAlign: "left",
   },
   tagline: {
     fontSize: 16,
     fontFamily: "Inter_400Regular",
     color: COLOURS.lightPurple,
     marginTop: 7,
-    textAlign: "center",
+    textAlign: "left",
   },
 
   // Main card
