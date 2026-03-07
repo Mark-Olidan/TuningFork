@@ -1,20 +1,25 @@
 // app/(tabs)/_layout.tsx
 import { COLOURS } from "@/constants/Colours";
+import { useAppTheme } from "@/context/themeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 
 export default function TabLayout() {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const { colors, isLight } = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLOURS.primaryPurple,
+          backgroundColor: colors.tabBar,
           borderTopWidth: 0,
-          height: 70,
-          paddingBottom: 10,
-          paddingTop: 8,
+          height: isLandscape ? 58 : 70,
+          paddingBottom: isLandscape ? 6 : 10,
+          paddingTop: isLandscape ? 6 : 8,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           marginHorizontal: 0,
@@ -23,18 +28,18 @@ export default function TabLayout() {
           left: 0,
           right: 0,
           bottom: 0,
-          shadowColor: COLOURS.primaryPurple,
+          shadowColor: isLight ? "#AAA08C" : COLOURS.primaryPurple,
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.4,
           shadowRadius: 10,
           elevation: 20,
         },
-        tabBarActiveTintColor: COLOURS.brightYellow, // yellow when active
-        tabBarInactiveTintColor: COLOURS.lightPurple, // soft purple when inactive
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: isLandscape ? 10 : 11,
           fontWeight: "600",
-          marginTop: 2,
+          marginTop: isLandscape ? 1 : 2,
         },
       }}
     >
@@ -67,6 +72,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="settings-outline" size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: "Saved",
+          tabBarIcon: ({ color, focused }) => (
+            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
+              <Ionicons name="bookmark-outline" size={22} color={color} />
             </View>
           ),
         }}

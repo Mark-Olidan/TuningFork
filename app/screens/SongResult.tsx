@@ -1,16 +1,21 @@
 // app/screens/SongResult.tsx
 import { COLOURS } from "@/constants/Colours";
+import { useAppTheme } from "@/context/themeContext";
+import { isSongSaved, saveSong } from "@/lib/songHistory";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Dimensions,
   Easing,
   Image,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -95,16 +100,38 @@ function ConfettiPiece({ delay, x }: { delay: number; x: number }) {
   );
 }
 
-const MOCK_SONG = {
-  title: "Blinding Lights",
-  artist: "The Weeknd",
-  album: "After Hours",
-  albumArt:
-    "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_After_Hours.png",
+const DEFAULT_ARTWORK =
+  "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_After_Hours.png";
+
+const pickParam = (value: string | string[] | undefined) => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
 };
 
 export default function SongResult() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isCompactLandscape = isLandscape && height < 430;
+  const { colors } = useAppTheme();
+  const params = useLocalSearchParams<{
+    title?: string | string[];
+    artist?: string | string[];
+    album?: string | string[];
+    artwork?: string | string[];
+  }>();
+
+  const song = {
+    title: pickParam(params.title) || "Unknown song",
+    artist: pickParam(params.artist) || "Unknown artist",
+    album: pickParam(params.album) || "Album unavailable",
+    albumArt: pickParam(params.artwork) || DEFAULT_ARTWORK,
+  };
+
+  const [albumArtUri, setAlbumArtUri] = useState(song.albumArt);
+  const [saved, setSaved] = useState(false);
 
   const cardSlide = useRef(new Animated.Value(80)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
@@ -114,6 +141,48 @@ export default function SongResult() {
     x: Math.random() * SCREEN_WIDTH,
     delay: Math.random() * 800,
   }));
+
+  useEffect(() => {
+    setAlbumArtUri(song.albumArt || DEFAULT_ARTWORK);
+  }, [song.albumArt]);
+
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      const alreadySaved = await isSongSaved({
+        title: song.title,
+        artist: song.artist,
+        album: song.album,
+      });
+      setSaved(alreadySaved);
+    };
+
+    void checkIfSaved();
+  }, [song.album, song.artist, song.title]);
+
+  const handleSave = async () => {
+    await saveSong({
+      title: song.title,
+      artist: song.artist,
+      album: song.album,
+      artwork: albumArtUri,
+    });
+    setSaved(true);
+    Alert.alert("Saved", "Song added to your Saved tab.");
+  };
+
+  const handleShare = async () => {
+    try {
+      const shareText = `Check out this song I found on Tuning Fork:\n${song.title} - ${song.artist}${song.album ? `\nAlbum: ${song.album}` : ""}`;
+
+      await Share.share({
+        message: shareText,
+        url: albumArtUri,
+        title: `${song.title} - ${song.artist}`,
+      });
+    } catch {
+      Alert.alert("Share unavailable", "Could not open the share menu.");
+    }
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -134,7 +203,13 @@ export default function SongResult() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: colors.background },
+        isLandscape && styles.containerLandscape,
+      ]}
+    >
       {/* Confetti */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
         {confettiPieces.map((p) => (
@@ -144,58 +219,76 @@ export default function SongResult() {
 
       {/* Back button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={COLOURS.lightPurple} />
+        <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
       </TouchableOpacity>
 
       {/* Found it header */}
-      <View style={styles.header}>
-        <Text style={styles.foundText}>Found it! 🎉</Text>
-        <Text style={styles.foundSubtext}>Here is your song</Text>
+      <View style={[styles.header, isLandscape && styles.headerLandscape]}>
+        <Text
+          style={[styles.foundText, { color: colors.title }, isLandscape && styles.foundTextLandscape]}
+        >
+          Found it! 🎉
+        </Text>
+        <Text style={[styles.foundSubtext, { color: colors.subtitle }]}>Here is your song</Text>
       </View>
 
-      {/* Song Card */}
-      <Animated.View
-        style={[
-          styles.songCard,
-          { transform: [{ translateY: cardSlide }], opacity: cardOpacity },
-        ]}
-      >
-        <Image
-          source={{ uri: MOCK_SONG.albumArt }}
-          style={styles.albumArt}
-          resizeMode="cover"
-        />
-        <View style={styles.songInfo}>
-          <Text style={styles.songTitle}>{MOCK_SONG.title}</Text>
-          <Text style={styles.songArtist}>{MOCK_SONG.artist}</Text>
-          <Text style={styles.songAlbum}>{MOCK_SONG.album}</Text>
-        </View>
-      </Animated.View>
+      <View style={[styles.contentWrap, isLandscape && styles.contentWrapLandscape]}>
+        {/* Song Card */}
+        <Animated.View
+          style={[
+            styles.songCard,
+            isLandscape && styles.songCardLandscape,
+            { transform: [{ translateY: cardSlide }], opacity: cardOpacity },
+          ]}
+        >
+          <Image
+            source={{ uri: albumArtUri }}
+            style={styles.albumArt}
+            resizeMode="cover"
+            onError={() => setAlbumArtUri(DEFAULT_ARTWORK)}
+          />
+          <View style={styles.songInfo}>
+            <Text style={[styles.songTitle, isLandscape && styles.songTitleLandscape]}>{song.title}</Text>
+            <Text style={styles.songArtist}>{song.artist}</Text>
+            <Text style={styles.songAlbum}>{song.album}</Text>
+          </View>
+        </Animated.View>
 
-      {/* Action Buttons */}
-      <Animated.View style={[styles.actions, { opacity: cardOpacity }]}>
+        {/* Action Buttons */}
+        <Animated.View style={[styles.actions, isLandscape && styles.actionsLandscape, { opacity: cardOpacity }]}>
         {/* Save + Share */}
         <View style={styles.secondaryRow}>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={[styles.secondaryButton, isCompactLandscape && styles.secondaryButtonCompact]}
+            activeOpacity={0.8}
+            onPress={() => void handleSave()}
+          >
             <Ionicons
-              name="bookmark-outline"
+              name={saved ? "bookmark" : "bookmark-outline"}
               size={20}
-              color={COLOURS.brightYellow}
+              color={colors.title}
             />
-            <Text style={styles.secondaryText}>Save</Text>
+            <Text style={[styles.secondaryText, { color: colors.title }]}>{saved ? "Saved" : "Save"}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={[styles.secondaryButton, isCompactLandscape && styles.secondaryButtonCompact]}
+            activeOpacity={0.8}
+            onPress={() => void handleShare()}
+          >
             <Ionicons
               name="share-outline"
               size={20}
-              color={COLOURS.brightYellow}
+              color={colors.title}
             />
-            <Text style={styles.secondaryText}>Share</Text>
+            <Text style={[styles.secondaryText, { color: colors.title }]}>Share</Text>
           </TouchableOpacity>
         </View>
 
         {/* Sheet Music */}
-        <TouchableOpacity style={styles.sheetMusicButton} activeOpacity={0.85}>
+        <TouchableOpacity
+          style={[styles.sheetMusicButton, isCompactLandscape && styles.sheetMusicButtonCompact]}
+          activeOpacity={0.85}
+        >
           <Ionicons
             name="document-text-outline"
             size={20}
@@ -204,13 +297,14 @@ export default function SongResult() {
           <Text style={styles.sheetMusicText}>View Sheet Music</Text>
         </TouchableOpacity>
       </Animated.View>
+      </View>
 
       {/* Identify Another Song */}
       <TouchableOpacity
         style={styles.tryAgain}
         onPress={() => router.push("/screens/ListeningState")}
       >
-        <Text style={styles.tryAgainText}>Identify Another Song</Text>
+        <Text style={[styles.tryAgainText, { color: colors.subtitle }]}>Identify Another Song</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -223,6 +317,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 40,
   },
+  containerLandscape: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
   backButton: {
     marginTop: 8,
     width: 40,
@@ -234,17 +332,32 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 24,
   },
+  headerLandscape: {
+    marginTop: 2,
+    marginBottom: 10,
+  },
   foundText: {
     fontFamily: "WinkyMilky",
     fontSize: 42,
     color: COLOURS.brightYellow,
     textAlign: "center",
   },
+  foundTextLandscape: {
+    fontSize: 32,
+  },
   foundSubtext: {
     fontFamily: "Inter_400Regular",
     fontSize: 16,
     color: COLOURS.lightPurple,
     marginTop: 4,
+  },
+
+  contentWrap: {
+    flex: 1,
+  },
+  contentWrapLandscape: {
+    flexDirection: "row",
+    gap: 12,
   },
 
   // Song card — big and fills space
@@ -260,6 +373,10 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 12,
   },
+  songCardLandscape: {
+    flex: 1.2,
+    marginBottom: 0,
+  },
   albumArt: {
     width: "100%",
     flex: 1, // 👈 art takes up all available card space
@@ -272,6 +389,9 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     fontSize: 28,
     color: COLOURS.brightYellow,
+  },
+  songTitleLandscape: {
+    fontSize: 22,
   },
   songArtist: {
     fontFamily: "Inter_600SemiBold",
@@ -288,9 +408,15 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 8,
   },
+  actionsLandscape: {
+    flex: 0.9,
+    marginTop: 0,
+    justifyContent: "center",
+  },
   secondaryRow: {
     flexDirection: "row",
     gap: 12,
+    flexWrap: "wrap",
   },
   secondaryButton: {
     flex: 1,
@@ -301,6 +427,10 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     gap: 8,
     backgroundColor: COLOURS.primaryPurple,
+    minHeight: 44,
+  },
+  secondaryButtonCompact: {
+    paddingVertical: 10,
   },
   secondaryText: {
     fontFamily: "Inter_600SemiBold",
@@ -315,6 +445,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 18,
     gap: 8,
+    minHeight: 44,
+  },
+  sheetMusicButtonCompact: {
+    paddingVertical: 12,
   },
   sheetMusicText: {
     fontFamily: "Inter_700Bold",

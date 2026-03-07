@@ -1,7 +1,8 @@
 // app/screens/ErrorRetry.tsx
 import { COLOURS } from "@/constants/Colours";
+import { useAppTheme } from "@/context/themeContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Animated,
@@ -9,12 +10,21 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ErrorRetry() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isCompactLandscape = isLandscape && height < 430;
+  const { colors } = useAppTheme();
+  const params = useLocalSearchParams<{ reason?: string | string[] }>();
+  const reason = Array.isArray(params.reason)
+    ? params.reason[0]
+    : params.reason;
 
   // Sad face shake animation
   const shake = useRef(new Animated.Value(0)).current;
@@ -126,22 +136,32 @@ export default function ErrorRetry() {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: colors.background },
+        isLandscape && styles.containerLandscape,
+      ]}
+    >
       {/* Back button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={COLOURS.lightPurple} />
+        <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
       </TouchableOpacity>
 
       {/* Center content */}
-      <View style={styles.centerContent}>
+      <View style={[styles.centerContent, isLandscape && styles.centerContentLandscape]}>
         {/* Rings + Sad face */}
-        <View style={styles.ringContainer}>
-          <Animated.View style={ringStyle(ring1, 300)} />
-          <Animated.View style={ringStyle(ring2, 300)} />
+        <View style={[styles.ringContainer, isLandscape && styles.ringContainerLandscape]}>
+          <Animated.View style={ringStyle(ring1, isLandscape ? 220 : 300)} />
+          <Animated.View style={ringStyle(ring2, isLandscape ? 220 : 300)} />
 
           {/* Sad smiley */}
           <Animated.View
-            style={[styles.sadFace, { transform: [{ translateX: shake }] }]}
+            style={[
+              styles.sadFace,
+              isLandscape && styles.sadFaceLandscape,
+              { transform: [{ translateX: shake }] },
+            ]}
           >
             {/* Eyes */}
             <View style={styles.eyes}>
@@ -160,9 +180,9 @@ export default function ErrorRetry() {
             { opacity: fadeIn, transform: [{ translateY: slideUp }] },
           ]}
         >
-          <Text style={styles.errorTitle}>Could not catch that </Text>
-          <Text style={styles.errorSubtitle}>
-            Make sure your device can hear the music clearly and try again
+          <Text style={[styles.errorTitle, { color: "#FF6B6B" }, isLandscape && styles.errorTitleLandscape]}>Could not catch that </Text>
+          <Text style={[styles.errorSubtitle, { color: colors.subtitle }]}>
+            {reason || "Make sure your device can hear the music clearly and try again"}
           </Text>
         </Animated.View>
       </View>
@@ -171,6 +191,7 @@ export default function ErrorRetry() {
       <Animated.View
         style={[
           styles.buttons,
+          isLandscape && styles.buttonsLandscape,
           { opacity: fadeIn, transform: [{ translateY: slideUp }] },
         ]}
       >
@@ -186,12 +207,12 @@ export default function ErrorRetry() {
 
         {/* Hum instead */}
         <TouchableOpacity
-          style={styles.humButton}
+          style={[styles.humButton, isCompactLandscape && styles.humButtonCompact]}
           activeOpacity={0.85}
-          onPress={() => {}}
+          onPress={() => router.push("/screens/ListeningState")}
         >
           <Ionicons name="mic-outline" size={20} color={COLOURS.brightYellow} />
-          <Text style={styles.humText}>Hum or Sing Instead</Text>
+          <Text style={[styles.humText, { color: colors.title }]}>Hum or Sing Instead</Text>
         </TouchableOpacity>
 
         {/* Go Home */}
@@ -199,7 +220,7 @@ export default function ErrorRetry() {
           style={styles.homeButton}
           onPress={() => router.push("/")}
         >
-          <Text style={styles.homeText}>Back to Home</Text>
+          <Text style={[styles.homeText, { color: colors.subtitle }]}>Back to Home</Text>
         </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
@@ -212,6 +233,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLOURS.darkBackground,
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  containerLandscape: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   backButton: {
     marginTop: 8,
@@ -227,6 +252,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 40,
   },
+  centerContentLandscape: {
+    gap: 18,
+  },
 
   // Rings
   ringContainer: {
@@ -234,6 +262,10 @@ const styles = StyleSheet.create({
     height: 300,
     alignItems: "center",
     justifyContent: "center",
+  },
+  ringContainerLandscape: {
+    width: 220,
+    height: 220,
   },
 
   // Sad face — red tint instead of yellow
@@ -250,6 +282,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 30,
     elevation: 20,
+  },
+  sadFaceLandscape: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
   eyes: {
     flexDirection: "row",
@@ -286,6 +323,9 @@ const styles = StyleSheet.create({
     color: "#FF6B6B",
     textAlign: "center",
   },
+  errorTitleLandscape: {
+    fontSize: 28,
+  },
   errorSubtitle: {
     fontFamily: "Inter_400Regular",
     fontSize: 15,
@@ -299,6 +339,9 @@ const styles = StyleSheet.create({
   buttons: {
     gap: 12,
   },
+  buttonsLandscape: {
+    gap: 8,
+  },
   retryButton: {
     backgroundColor: COLOURS.brightYellow,
     flexDirection: "row",
@@ -307,6 +350,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 18,
     gap: 8,
+    minHeight: 44,
   },
   retryText: {
     fontFamily: "Inter_700Bold",
@@ -322,6 +366,10 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1.5,
     borderColor: COLOURS.lightPurple,
+    minHeight: 44,
+  },
+  humButtonCompact: {
+    paddingVertical: 12,
   },
   humText: {
     fontFamily: "Inter_600SemiBold",

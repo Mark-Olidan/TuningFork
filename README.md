@@ -16,6 +16,39 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+## ACRCloud local wiring
+
+This project uses a local server to keep ACRCloud secrets off the client.
+
+1. Add ACRCloud secrets to `.env.backend.local`:
+
+   ```bash
+   ACR_HOST=identify-us-west-2.acrcloud.com
+   ACR_ACCESS_KEY=your_access_key
+   ACR_ACCESS_SECRET=your_access_secret
+   ```
+
+2. In `.env.local`, set your API base URL:
+
+   ```bash
+   # Android emulator
+   EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8787
+   ```
+
+   For a physical device, use your machine LAN IP instead of `10.0.2.2`.
+
+3. Start the identify server:
+
+   ```bash
+   npm run identify:server
+   ```
+
+4. In another terminal, start Expo:
+
+   ```bash
+   npx expo start -c
+   ```
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)

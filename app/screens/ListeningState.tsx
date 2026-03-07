@@ -1,5 +1,8 @@
 // app/screens/ListeningState.tsx
 import { COLOURS } from "@/constants/Colours";
+import { useAppTheme } from "@/context/themeContext";
+import { useIdentifySong } from "@/hooks/use-identify-song";
+import { saveSongToHistory } from "@/lib/songHistory";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -9,12 +12,21 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ListeningState() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isCompactLandscape = isLandscape && height < 430;
+  const { colors } = useAppTheme();
+  const { status, result, error, startListening, cancelListening } =
+    useIdentifySong();
+  const hasStartedRef = useRef(false);
+  const hasNavigatedRef = useRef(false);
 
   // Pulsing rings
   const ring1 = useRef(new Animated.Value(0)).current;
@@ -101,6 +113,54 @@ export default function ListeningState() {
     };
   }, []);
 
+  useEffect(() => {
+    if (hasStartedRef.current) {
+      return;
+    }
+    hasStartedRef.current = true;
+    void startListening();
+  }, [startListening]);
+
+  useEffect(() => {
+    if (hasNavigatedRef.current) {
+      return;
+    }
+
+    if (status === "matched" && result) {
+      hasNavigatedRef.current = true;
+      void (async () => {
+        await saveSongToHistory({
+          title: result.title,
+          artist: result.artist,
+          album: result.album,
+          artwork: result.artwork,
+          acrid: result.acrid,
+        });
+
+        router.replace({
+          pathname: "/screens/SongResult",
+          params: {
+            title: result.title,
+            artist: result.artist,
+            album: result.album || "",
+            artwork: result.artwork || "",
+          },
+        });
+      })();
+      return;
+    }
+
+    if (status === "no_match" || status === "error") {
+      hasNavigatedRef.current = true;
+      router.replace({
+        pathname: "/screens/ErrorRetry",
+        params: {
+          reason: error || "No match found.",
+        },
+      });
+    }
+  }, [error, result, router, status]);
+
   const ringStyle = (anim: Animated.Value, size: number) => ({
     width: size,
     height: size,
@@ -116,24 +176,37 @@ export default function ListeningState() {
     ],
   });
 
+  const statusLabel =
+    status === "uploading" ? "ANALYZING YOUR RECORDING..." : "CAPTURING THE BEAT...";
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: colors.background },
+        isLandscape && styles.containerLandscape,
+      ]}
+    >
       {/* Back button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={COLOURS.lightPurple} />
+        <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
       </TouchableOpacity>
 
       {/* Center content */}
-      <View style={styles.centerContent}>
+      <View style={[styles.centerContent, isLandscape && styles.centerContentLandscape]}>
         {/* Rings + Smiley */}
-        <View style={styles.ringContainer}>
-          <Animated.View style={ringStyle(ring1, 320)} />
-          <Animated.View style={ringStyle(ring2, 320)} />
-          <Animated.View style={ringStyle(ring3, 320)} />
+        <View style={[styles.ringContainer, isLandscape && styles.ringContainerLandscape]}>
+          <Animated.View style={ringStyle(ring1, isLandscape ? 220 : 320)} />
+          <Animated.View style={ringStyle(ring2, isLandscape ? 220 : 320)} />
+          <Animated.View style={ringStyle(ring3, isLandscape ? 220 : 320)} />
 
           {/* Smiley face */}
           <Animated.View
-            style={[styles.smiley, { transform: [{ scale: bounce }] }]}
+            style={[
+              styles.smiley,
+              isLandscape && styles.smileyLandscape,
+              { transform: [{ scale: bounce }] },
+            ]}
           >
             {/* Eyes */}
             <View style={styles.eyes}>
@@ -146,17 +219,20 @@ export default function ListeningState() {
         </View>
 
         {/* Capturing text */}
-        <Animated.Text style={[styles.capturingText, { opacity: dotsOpacity }]}>
-          CAPTURING THE BEAT...
+        <Animated.Text style={[styles.capturingText, { opacity: dotsOpacity, color: colors.title }]}>
+          {statusLabel}
         </Animated.Text>
       </View>
 
       {/* Cancel button */}
       <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={() => router.back()}
+        style={[styles.cancelButton, { borderColor: colors.border }]}
+        onPress={async () => {
+          await cancelListening();
+          router.back();
+        }}
       >
-        <Text style={styles.cancelText}>Cancel</Text>
+        <Text style={[styles.cancelText, { color: colors.subtitle }]}>Cancel</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -168,6 +244,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLOURS.darkBackground,
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  containerLandscape: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
   },
 
   // Back button
@@ -185,6 +265,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 48,
   },
+  centerContentLandscape: {
+    gap: 24,
+  },
 
   // Rings
   ringContainer: {
@@ -192,6 +275,10 @@ const styles = StyleSheet.create({
     height: 320,
     alignItems: "center",
     justifyContent: "center",
+  },
+  ringContainerLandscape: {
+    width: 220,
+    height: 220,
   },
 
   // Smiley
@@ -208,6 +295,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 30,
     elevation: 20,
+  },
+  smileyLandscape: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
   },
   eyes: {
     flexDirection: "row",
@@ -247,6 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: COLOURS.lightPurple,
+    minHeight: 44,
   },
   cancelText: {
     fontFamily: "Inter_600SemiBold",

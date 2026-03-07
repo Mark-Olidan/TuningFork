@@ -1,66 +1,117 @@
 // app/(tabs)/index.tsx
 import { COLOURS } from "@/constants/Colours";
+import { useAppTheme } from "@/context/themeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isCompactLandscape = isLandscape && height < 430;
+  const { colors } = useAppTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: colors.background },
+        isLandscape && styles.containerLandscape,
+      ]}
+    >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.appName}>Tuning Fork</Text>
-        <Text style={styles.tagline}>Catch the vibe 🎶</Text>
+      <View style={[styles.header, isLandscape && styles.headerLandscape]}>
+        <Text
+          style={[
+            styles.appName,
+            { color: colors.title },
+            isLandscape && styles.appNameLandscape,
+          ]}
+        >
+          Tuning Fork
+        </Text>
+        <Text
+          style={[
+            styles.tagline,
+            { color: colors.subtitle },
+            isLandscape && styles.taglineLandscape,
+          ]}
+        >
+          Catch the vibe 🎶
+        </Text>
       </View>
 
-      {/* Main Card - tappable */}
-      <TouchableOpacity
-        style={styles.card}
-        activeOpacity={0.85}
-        onPress={() => router.push("/screens/SongResult")}
-      >
-        {/* Triple ring circle */}
-        <View style={styles.bigCircle}>
-          <View style={styles.middleCircle}>
-            <View style={styles.innerCircle}>
-              <Ionicons
-                name="musical-notes"
-                size={64}
-                color={COLOURS.brightYellow}
-              />
+      <View style={[styles.mainArea, isLandscape && styles.mainAreaLandscape]}>
+        {/* Main Card - tappable */}
+        <TouchableOpacity
+          style={[
+            styles.card,
+            isLandscape && styles.cardLandscape,
+            isCompactLandscape && styles.cardCompactLandscape,
+          ]}
+          activeOpacity={0.85}
+          onPress={() => router.push("/screens/ListeningState")}
+        >
+          {/* Triple ring circle */}
+          <View style={[styles.bigCircle, isLandscape && styles.bigCircleLandscape]}>
+            <View style={[styles.middleCircle, isLandscape && styles.middleCircleLandscape]}>
+              <View style={[styles.innerCircle, isLandscape && styles.innerCircleLandscape]}>
+                <Ionicons
+                  name="musical-notes"
+                  size={isLandscape ? 44 : 64}
+                  color={COLOURS.brightYellow}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <Text style={styles.cardTitle}>Tap to Identify</Text>
-        <Text style={styles.cardSubtitle}>
-          Listen to the music around you{"\n"} and find your next favourite
-          {"\n"} song to learn
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={[
+              styles.cardTitle,
+              isLandscape && styles.cardTitleLandscape,
+              isCompactLandscape && styles.cardTitleCompactLandscape,
+            ]}
+          >
+            Tap to Identify
+          </Text>
+          <Text
+            style={[
+              styles.cardSubtitle,
+              isLandscape && styles.cardSubtitleLandscape,
+              isCompactLandscape && styles.cardSubtitleCompactLandscape,
+            ]}
+          >
+            Listen to the music around you{"\n"} and find your next favourite
+            {"\n"} song to learn
+          </Text>
+        </TouchableOpacity>
 
-      {/* Hum or Sing - separate row card */}
-      <TouchableOpacity
-        style={styles.humRow}
-        activeOpacity={0.8}
-        onPress={() => {}}
-      >
-        <View style={styles.humIconBox}>
-          <Ionicons name="mic" size={22} color={COLOURS.darkBackground} />
-        </View>
-        <View style={styles.humText}>
-          <Text style={styles.humTitle}>Hum or Sing</Text>
-          <Text style={styles.humSubtitle}>Cant remember the lyrics?</Text>
-        </View>
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={COLOURS.darkBackground}
-        />
-      </TouchableOpacity>
+        {/* Hum or Sing - separate row card */}
+        <TouchableOpacity
+          style={[
+            styles.humRow,
+            isLandscape && styles.humRowLandscape,
+            isCompactLandscape && styles.humRowCompactLandscape,
+          ]}
+          activeOpacity={0.8}
+          onPress={() => router.push("/screens/ListeningState")}
+        >
+          <View style={styles.humIconBox}>
+            <Ionicons name="mic" size={22} color={COLOURS.darkBackground} />
+          </View>
+          <View style={styles.humText}>
+            <Text style={styles.humTitle}>Hum or Sing</Text>
+            <Text style={styles.humSubtitle}>Cant remember the lyrics?</Text>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={COLOURS.darkBackground}
+          />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -72,12 +123,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 100,
   },
+  containerLandscape: {
+    paddingBottom: 70,
+    paddingHorizontal: 18,
+  },
+
+  mainArea: {
+    flex: 1,
+  },
+  mainAreaLandscape: {
+    flexDirection: "row",
+    gap: 14,
+    alignItems: "stretch",
+  },
 
   // Header
   header: {
     marginTop: 20,
     marginBottom: 28,
     alignItems: "flex-start",
+  },
+  headerLandscape: {
+    marginTop: 8,
+    marginBottom: 12,
   },
   appName: {
     fontSize: 48,
@@ -86,12 +154,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textAlign: "left",
   },
+  appNameLandscape: {
+    fontSize: 34,
+  },
   tagline: {
     fontSize: 16,
     fontFamily: "Inter_400Regular",
     color: COLOURS.lightPurple,
     marginTop: 7,
     textAlign: "left",
+  },
+  taglineLandscape: {
+    marginTop: 4,
+    fontSize: 14,
   },
 
   // Main card
@@ -110,6 +185,15 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 12,
   },
+  cardLandscape: {
+    flex: 1.2,
+    marginBottom: 0,
+    paddingVertical: 20,
+    borderRadius: 24,
+  },
+  cardCompactLandscape: {
+    paddingVertical: 14,
+  },
 
   // Triple ring circle
   bigCircle: {
@@ -121,6 +205,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 32,
   },
+  bigCircleLandscape: {
+    width: 148,
+    height: 148,
+    borderRadius: 74,
+    marginBottom: 16,
+  },
   middleCircle: {
     width: 160,
     height: 160,
@@ -128,6 +218,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(249, 239, 189, 0.1)",
     alignItems: "center",
     justifyContent: "center",
+  },
+  middleCircleLandscape: {
+    width: 118,
+    height: 118,
+    borderRadius: 59,
   },
   innerCircle: {
     width: 120,
@@ -137,6 +232,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  innerCircleLandscape: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+  },
   cardTitle: {
     fontSize: 32,
     fontFamily: "Inter_700Bold",
@@ -144,12 +244,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
+  cardTitleLandscape: {
+    fontSize: 25,
+    marginBottom: 6,
+  },
+  cardTitleCompactLandscape: {
+    fontSize: 20,
+  },
   cardSubtitle: {
     fontSize: 15,
     fontFamily: "Inter_400Regular",
     color: COLOURS.lightPurple,
     textAlign: "center",
     lineHeight: 24,
+  },
+  cardSubtitleLandscape: {
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  cardSubtitleCompactLandscape: {
+    fontSize: 12,
+    lineHeight: 17,
   },
 
   // Hum or Sing row
@@ -162,6 +277,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     gap: 14,
+  },
+  humRowLandscape: {
+    flex: 0.9,
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  humRowCompactLandscape: {
+    paddingVertical: 12,
+    minHeight: 44,
   },
   humIconBox: {
     width: 44,
