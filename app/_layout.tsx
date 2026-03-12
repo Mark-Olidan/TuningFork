@@ -6,6 +6,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { ThemeProvider } from "@/context/themeContext";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -22,10 +23,16 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    SplashScreen.hideAsync();
+  }, []);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded) {
+    return (
+      <ThemeProvider>
+        <LoadingScreen />
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>
