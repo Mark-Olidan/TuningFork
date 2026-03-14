@@ -288,6 +288,10 @@ export default function SongResult() {
         <TouchableOpacity
           style={[styles.sheetMusicButton, isCompactLandscape && styles.sheetMusicButtonCompact]}
           activeOpacity={0.85}
+          onPress={() => router.push({
+            pathname: "/screens/SheetMusicScreen",
+            params: { title: song.title, artist: song.artist },
+          })}
         >
           <Ionicons
             name="document-text-outline"
