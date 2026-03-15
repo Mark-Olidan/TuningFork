@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const API_BASE_URL = "http://10.186.157.142:8000"; // ← update to your machine's LAN IP
+const API_BASE_URL = "http://10.0.0.222:8000"; // ← update to your machine's LAN IP
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Status = "loading" | "rendering" | "done" | "error";
@@ -91,7 +91,7 @@ export default function SheetMusicScreen() {
 
     async function fetchSheet() {
       try {
-        const res = await fetch(`${API_BASE_URL}/convert`, {
+        const res = await fetch(`${API_BASE_URL}/sheet-music`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ song_name: title, artist }),
