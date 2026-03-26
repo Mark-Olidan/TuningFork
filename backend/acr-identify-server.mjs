@@ -217,6 +217,8 @@ const identifyWithAcrCloud = async (audioBuffer, mimeType) => {
   return { response, payload };
 };
 
+const API_SECRET = process.env.API_SECRET;
+
 const server = createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     sendJson(res, 200, { ok: true });
@@ -228,12 +230,56 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  if (API_SECRET && req.headers["x-api-secret"] !== API_SECRET) {
+    sendJson(res, 401, { ok: false, error: "Unauthorized" });
+    return;
+  }
+
   if (req.method === "GET" && req.url === "/debug/last-acr") {
     sendJson(res, 200, {
       ok: true,
       hasPayload: Boolean(lastAcrPayload),
       payload: lastAcrPayload,
     });
+    return;
+  }
+
+  if (req.method === "GET" && req.url?.startsWith("/suggestions")) {
+    const urlObj = new URL(req.url, `http://localhost:${PORT}`);
+    const title  = urlObj.searchParams.get("title")  || "";
+    const artist = urlObj.searchParams.get("artist") || "";
+
+    if (!title || !artist) {
+      sendJson(res, 400, { ok: false, error: "title and artist are required" });
+      return;
+    }
+
+    try {
+      const q = encodeURIComponent(`track:"${title}" artist:"${artist}"`);
+      const searchResult = await fetchJson(`https://api.deezer.com/search?q=${q}&limit=1`);
+      const trackId = searchResult?.data?.[0]?.id;
+
+      if (!trackId) {
+        sendJson(res, 200, { ok: true, suggestions: [] });
+        return;
+      }
+
+      const radioResult = await fetchJson(`https://api.deezer.com/track/${trackId}/radio?limit=10`);
+      const radioTracks = radioResult?.data ?? [];
+
+      const suggestions = radioTracks
+        .filter((t) => t.title.toLowerCase() !== title.toLowerCase())
+        .slice(0, 6)
+        .map((t) => ({
+          title:   t.title,
+          artist:  t.artist?.name ?? "Unknown Artist",
+          artwork: t.album?.cover_big ?? t.album?.cover_medium ?? t.album?.cover ?? null,
+        }));
+
+      sendJson(res, 200, { ok: true, suggestions });
+    } catch {
+      sendJson(res, 500, { ok: false, error: "Failed to fetch suggestions" });
+    }
     return;
   }
 

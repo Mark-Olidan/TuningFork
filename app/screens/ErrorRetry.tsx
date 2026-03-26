@@ -21,10 +21,15 @@ export default function ErrorRetry() {
   const isLandscape = width > height;
   const isCompactLandscape = isLandscape && height < 430;
   const { colors } = useAppTheme();
-  const params = useLocalSearchParams<{ reason?: string | string[] }>();
+  const params = useLocalSearchParams<{
+    reason?: string | string[];
+    type?: string | string[];
+  }>();
   const reason = Array.isArray(params.reason)
     ? params.reason[0]
     : params.reason;
+  const type = Array.isArray(params.type) ? params.type[0] : params.type;
+  const isNoMatch = type === "no_match";
 
   // Sad face shake animation
   const shake = useRef(new Animated.Value(0)).current;
@@ -120,14 +125,17 @@ export default function ErrorRetry() {
     };
   }, []);
 
+  const accentColor = isNoMatch ? COLOURS.brightYellow : "#FF6B6B";
+
   const ringStyle = (anim: Animated.Value, size: number) => ({
     width: size,
     height: size,
     borderRadius: size / 2,
     position: "absolute" as const,
     borderWidth: 1.5,
-    borderColor: "#FF6B6B",
+    borderColor: accentColor,
     opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0] }),
+
     transform: [
       {
         scale: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.5] }),
@@ -149,18 +157,33 @@ export default function ErrorRetry() {
       </TouchableOpacity>
 
       {/* Center content */}
-      <View style={[styles.centerContent, isLandscape && styles.centerContentLandscape]}>
+      <View
+        style={[
+          styles.centerContent,
+          isLandscape && styles.centerContentLandscape,
+        ]}
+      >
         {/* Rings + Sad face */}
-        <View style={[styles.ringContainer, isLandscape && styles.ringContainerLandscape]}>
+        <View
+          style={[
+            styles.ringContainer,
+            isLandscape && styles.ringContainerLandscape,
+          ]}
+        >
           <Animated.View style={ringStyle(ring1, isLandscape ? 220 : 300)} />
           <Animated.View style={ringStyle(ring2, isLandscape ? 220 : 300)} />
 
-          {/* Sad smiley */}
+          {/* Sad / neutral smiley */}
           <Animated.View
             style={[
               styles.sadFace,
               isLandscape && styles.sadFaceLandscape,
-              { transform: [{ translateX: shake }] },
+              { backgroundColor: accentColor, shadowColor: accentColor },
+              {
+                transform: [
+                  { translateX: isNoMatch ? new Animated.Value(0) : shake },
+                ],
+              },
             ]}
           >
             {/* Eyes */}
@@ -168,8 +191,12 @@ export default function ErrorRetry() {
               <View style={styles.eye} />
               <View style={styles.eye} />
             </View>
-            {/* Sad mouth */}
-            <View style={styles.sadMouth} />
+            {/* Mouth — neutral line for no_match, sad arc for error */}
+            {isNoMatch ? (
+              <View style={styles.neutralMouth} />
+            ) : (
+              <View style={styles.sadMouth} />
+            )}
           </Animated.View>
         </View>
 
@@ -180,9 +207,21 @@ export default function ErrorRetry() {
             { opacity: fadeIn, transform: [{ translateY: slideUp }] },
           ]}
         >
-          <Text style={[styles.errorTitle, { color: "#FF6B6B" }, isLandscape && styles.errorTitleLandscape]}>Could not catch that </Text>
+          <Text
+            style={[
+              styles.errorTitle,
+              { color: accentColor },
+              isLandscape && styles.errorTitleLandscape,
+            ]}
+          >
+            {isNoMatch ? "We heard you!" : "Could not catch that"}
+          </Text>
           <Text style={[styles.errorSubtitle, { color: colors.subtitle }]}>
-            {reason || "Make sure your device can hear the music clearly and try again"}
+            {isNoMatch
+              ? reason ||
+                "The audio came through, but we couldn't match it to any song"
+              : reason ||
+                "Make sure your device can hear the music clearly and try again"}
           </Text>
         </Animated.View>
       </View>
@@ -207,12 +246,17 @@ export default function ErrorRetry() {
 
         {/* Hum instead */}
         <TouchableOpacity
-          style={[styles.humButton, isCompactLandscape && styles.humButtonCompact]}
+          style={[
+            styles.humButton,
+            isCompactLandscape && styles.humButtonCompact,
+          ]}
           activeOpacity={0.85}
           onPress={() => router.push("/screens/ListeningState")}
         >
           <Ionicons name="mic-outline" size={20} color={COLOURS.brightYellow} />
-          <Text style={[styles.humText, { color: colors.title }]}>Hum or Sing Instead</Text>
+          <Text style={[styles.humText, { color: colors.title }]}>
+            Hum or Sing Instead
+          </Text>
         </TouchableOpacity>
 
         {/* Go Home */}
@@ -220,7 +264,9 @@ export default function ErrorRetry() {
           style={styles.homeButton}
           onPress={() => router.push("/")}
         >
-          <Text style={[styles.homeText, { color: colors.subtitle }]}>Back to Home</Text>
+          <Text style={[styles.homeText, { color: colors.subtitle }]}>
+            Back to Home
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
@@ -309,6 +355,14 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: COLOURS.darkBackground,
     borderBottomWidth: 0,
+    marginTop: 8,
+  },
+  // Neutral mouth — flat line
+  neutralMouth: {
+    width: 44,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: COLOURS.darkBackground,
     marginTop: 8,
   },
 
