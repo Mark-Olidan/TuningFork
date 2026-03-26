@@ -79,6 +79,7 @@ export function useIdentifySong() {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					"ngrok-skip-browser-warning": "true",
 				},
 				body: JSON.stringify({
 					audioBase64,
@@ -87,7 +88,13 @@ export function useIdentifySong() {
 				}),
 			});
 
-			const payload = (await response.json()) as IdentifyResponse;
+			const text = await response.text();
+		let payload: IdentifyResponse;
+		try {
+			payload = JSON.parse(text) as IdentifyResponse;
+		} catch {
+			throw new Error("Cannot reach the identify server. Make sure the backend and ngrok tunnel are running.");
+		}
 			if (!response.ok || !payload.ok) {
 				throw new Error(payload.error || "Identification request failed.");
 			}
