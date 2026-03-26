@@ -217,6 +217,8 @@ const identifyWithAcrCloud = async (audioBuffer, mimeType) => {
   return { response, payload };
 };
 
+const API_SECRET = process.env.API_SECRET;
+
 const server = createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     sendJson(res, 200, { ok: true });
@@ -225,6 +227,11 @@ const server = createServer(async (req, res) => {
 
   if (req.method === "GET" && req.url === "/health") {
     sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (API_SECRET && req.headers["x-api-secret"] !== API_SECRET) {
+    sendJson(res, 401, { ok: false, error: "Unauthorized" });
     return;
   }
 

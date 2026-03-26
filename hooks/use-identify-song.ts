@@ -9,6 +9,7 @@ import { useCallback, useRef, useState } from "react";
 
 const IDENTIFY_RECORDING_MS = 8000;
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const API_SECRET = process.env.EXPO_PUBLIC_API_SECRET;
 
 export type IdentifyStatus =
 	| "idle"
@@ -80,6 +81,7 @@ export function useIdentifySong() {
 				headers: {
 					"Content-Type": "application/json",
 					"ngrok-skip-browser-warning": "true",
+					...(API_SECRET ? { "x-api-secret": API_SECRET } : {}),
 				},
 				body: JSON.stringify({
 					audioBase64,
