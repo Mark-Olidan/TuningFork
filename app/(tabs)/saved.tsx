@@ -1,6 +1,13 @@
+// app/(tabs)/saved.tsx — Combined Saved + History
 import { COLOURS } from "@/constants/Colours";
 import { useAppTheme } from "@/context/themeContext";
-import { SavedSongItem, deleteSavedSong, getSavedSongs } from "@/lib/songHistory";
+import {
+  SavedSongItem,
+  SongHistoryItem,
+  deleteSavedSong,
+  getSavedSongs,
+  getSongHistory,
+} from "@/lib/songHistory";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -10,70 +17,130 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+type Tab = "saved" | "history";
 
 const FALLBACK_ARTWORK =
   "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_After_Hours.png";
 
-const formatSavedTime = (savedAt: string) => {
-  const date = new Date(savedAt);
-  if (Number.isNaN(date.getTime())) {
-    return "Saved recently";
-  }
-
-  return `Saved ${date.toLocaleString()}`;
+const formatTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  return date.toLocaleString();
 };
 
-export default function Saved() {
+export default function SavedScreen() {
+  const [activeTab, setActiveTab] = useState<Tab>("saved");
   const [savedSongs, setSavedSongs] = useState<SavedSongItem[]>([]);
+  const [historySongs, setHistorySongs] = useState<SongHistoryItem[]>([]);
+
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const isCompactLandscape = isLandscape && height < 430;
   const { colors } = useAppTheme();
 
-  const handleDeleteSong = (item: SavedSongItem) => {
-    Alert.alert(
-      "Remove Saved Song",
-      `Remove \"${item.title}\" from your saved songs?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            void (async () => {
-              await deleteSavedSong(item.id);
-              setSavedSongs((prev) => prev.filter((song) => song.id !== item.id));
-            })();
-          },
-        },
-      ],
-    );
-  };
-
   useFocusEffect(
     useCallback(() => {
       let active = true;
-
-      const loadSaved = async () => {
-        const items = await getSavedSongs();
-        if (active) {
-          setSavedSongs(items);
-        }
+      const load = async () => {
+        const [saved, history] = await Promise.all([
+          getSavedSongs(),
+          getSongHistory(),
+        ]);
+        if (!active) return;
+        setSavedSongs(saved);
+        setHistorySongs(history);
       };
-
-      void loadSaved();
-
+      void load();
       return () => {
         active = false;
       };
     }, []),
+  );
+
+  const handleDeleteSaved = (item: SavedSongItem) => {
+    Alert.alert("Remove Song", `Remove "${item.title}" from saved?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          void (async () => {
+            await deleteSavedSong(item.id);
+            setSavedSongs((prev) => prev.filter((s) => s.id !== item.id));
+          })();
+        },
+      },
+    ]);
+  };
+
+  const renderSavedItem = ({ item }: { item: SavedSongItem }) => (
+    <View style={[styles.cardWrap, isLandscape && styles.cardWrapLandscape]}>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          isLandscape && styles.cardLandscape,
+          isCompactLandscape && styles.cardCompactLandscape,
+        ]}
+        activeOpacity={0.85}
+        onLongPress={() => handleDeleteSaved(item)}
+      >
+        <Image
+          source={{ uri: item.artwork || FALLBACK_ARTWORK }}
+          style={[styles.artwork, isLandscape && styles.artworkLandscape]}
+        />
+        <View style={styles.cardContent}>
+          <Text style={styles.songTitle} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <Text style={styles.songArtist} numberOfLines={1}>
+            {item.artist}
+          </Text>
+          <Text style={styles.songAlbum} numberOfLines={1}>
+            {item.album || "Album unavailable"}
+          </Text>
+          <Text style={styles.songMeta} numberOfLines={1}>
+            Saved {formatTime(item.savedAt)}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderHistoryItem = ({ item }: { item: SongHistoryItem }) => (
+    <View style={[styles.cardWrap, isLandscape && styles.cardWrapLandscape]}>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          isLandscape && styles.cardLandscape,
+          isCompactLandscape && styles.cardCompactLandscape,
+        ]}
+        activeOpacity={0.85}
+      >
+        <Image
+          source={{ uri: item.artwork || FALLBACK_ARTWORK }}
+          style={[styles.artwork, isLandscape && styles.artworkLandscape]}
+        />
+        <View style={styles.cardContent}>
+          <Text style={styles.songTitle} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <Text style={styles.songArtist} numberOfLines={1}>
+            {item.artist}
+          </Text>
+          <Text style={styles.songAlbum} numberOfLines={1}>
+            {item.album || "Album unavailable"}
+          </Text>
+          <Text style={styles.songMeta} numberOfLines={1}>
+            Detected {formatTime(item.detectedAt)}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -84,55 +151,93 @@ export default function Saved() {
         isLandscape && styles.containerLandscape,
       ]}
     >
-      <Text style={[styles.title, { color: colors.title }, isLandscape && styles.titleLandscape]}>Saved Songs</Text>
-      <Text style={[styles.subtitle, { color: colors.subtitle }, isLandscape && styles.subtitleLandscape]}>
-        Songs you bookmark from results will appear here.
+      {/* Title */}
+      <Text
+        style={[
+          styles.title,
+          { color: colors.title },
+          isLandscape && styles.titleLandscape,
+        ]}
+      >
+        {activeTab === "saved" ? "Saved Songs" : "History"}
       </Text>
 
-      {savedSongs.length === 0 ? (
+      {/* Toggle */}
+      <View style={[styles.toggleRow, { backgroundColor: colors.tabBar }]}>
+        <TouchableOpacity
+          style={[
+            styles.toggleBtn,
+            activeTab === "saved" && styles.toggleBtnActive,
+          ]}
+          onPress={() => setActiveTab("saved")}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[
+              styles.toggleLabel,
+              activeTab === "saved"
+                ? styles.toggleLabelActive
+                : { color: colors.subtitle },
+            ]}
+          >
+            Saved
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.toggleBtn,
+            activeTab === "history" && styles.toggleBtnActive,
+          ]}
+          onPress={() => setActiveTab("history")}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[
+              styles.toggleLabel,
+              activeTab === "history"
+                ? styles.toggleLabelActive
+                : { color: colors.subtitle },
+            ]}
+          >
+            History
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Content */}
+      {activeTab === "saved" ? (
+        savedSongs.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyText, { color: colors.subtitle }]}>
+              No saved songs yet.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={savedSongs}
+            numColumns={isLandscape ? 2 : 1}
+            key={isLandscape ? "s-land" : "s-port"}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            renderItem={renderSavedItem}
+          />
+        )
+      ) : historySongs.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No saved songs yet.</Text>
+          <Text style={[styles.emptyText, { color: colors.subtitle }]}>
+            No history yet.
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={savedSongs}
+          data={historySongs}
           numColumns={isLandscape ? 2 : 1}
-          key={isLandscape ? "landscape" : "portrait"}
+          key={isLandscape ? "h-land" : "h-port"}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <View style={[styles.cardWrap, isLandscape && styles.cardWrapLandscape]}>
-              <TouchableOpacity
-                style={[
-                  styles.card,
-                  isLandscape && styles.cardLandscape,
-                  isCompactLandscape && styles.cardCompactLandscape,
-                ]}
-                activeOpacity={0.85}
-                onLongPress={() => handleDeleteSong(item)}
-              >
-                <Image
-                  source={{ uri: item.artwork || FALLBACK_ARTWORK }}
-                  style={[styles.artwork, isLandscape && styles.artworkLandscape]}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.songTitle} numberOfLines={1}>
-                    {item.title}
-                  </Text>
-                  <Text style={styles.songArtist} numberOfLines={1}>
-                    {item.artist}
-                  </Text>
-                  <Text style={styles.songAlbum} numberOfLines={1}>
-                    {item.album || "Album unavailable"}
-                  </Text>
-                  <Text style={styles.savedAt} numberOfLines={1}>
-                    {formatSavedTime(item.savedAt)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
+          renderItem={renderHistoryItem}
         />
       )}
     </SafeAreaView>
@@ -142,8 +247,8 @@ export default function Saved() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOURS.darkBackground,
     paddingHorizontal: 20,
+    paddingBottom: 80,
   },
   containerLandscape: {
     paddingHorizontal: 14,
@@ -153,18 +258,33 @@ const styles = StyleSheet.create({
     fontSize: 38,
     color: COLOURS.brightYellow,
     marginTop: 8,
+    marginBottom: 14,
   },
   titleLandscape: {
     fontSize: 30,
+    marginBottom: 10,
   },
-  subtitle: {
-    fontFamily: "Inter_400Regular",
-    fontSize: 14,
-    color: COLOURS.lightPurple,
+  toggleRow: {
+    flexDirection: "row",
+    borderRadius: 16,
+    padding: 4,
     marginBottom: 18,
   },
-  subtitleLandscape: {
-    marginBottom: 12,
+  toggleBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 13,
+    alignItems: "center",
+  },
+  toggleBtnActive: {
+    backgroundColor: COLOURS.brightYellow,
+  },
+  toggleLabel: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 14,
+  },
+  toggleLabelActive: {
+    color: COLOURS.darkBackground,
   },
   emptyState: {
     flex: 1,
@@ -174,7 +294,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: "Inter_600SemiBold",
     fontSize: 16,
-    color: COLOURS.lightPurple,
   },
   list: {
     paddingBottom: 24,
@@ -231,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLOURS.lightPurple,
   },
-  savedAt: {
+  songMeta: {
     fontFamily: "Inter_400Regular",
     fontSize: 12,
     color: "rgba(255,255,255,0.7)",

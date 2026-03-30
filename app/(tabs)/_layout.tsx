@@ -43,11 +43,25 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* Home — no tab bar */}
       <Tabs.Screen
         name="index"
         options={{
-          title: "Identify",
+          title: "Home",
           tabBarStyle: { display: "none" },
+          tabBarIcon: ({ color, focused }) => (
+            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
+              <Ionicons name="home-outline" size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+
+      {/* Identify */}
+      <Tabs.Screen
+        name="identify"
+        options={{
+          title: "Identify",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="musical-notes" size={22} color={color} />
@@ -55,17 +69,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="results"
-        options={{
-          title: "History",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Ionicons name="time-outline" size={22} color={color} />
-            </View>
-          ),
-        }}
-      />
+
+      {/* Practice */}
       <Tabs.Screen
         name="practice"
         options={{
@@ -77,28 +82,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="tuner"
-        options={{
-          title: "Tuner",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Ionicons name="radio-outline" size={22} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Ionicons name="settings-outline" size={22} color={color} />
-            </View>
-          ),
-        }}
-      />
+
+      {/* Combined Saved + History */}
       <Tabs.Screen
         name="saved"
         options={{
@@ -110,6 +95,23 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* Settings */}
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, focused }) => (
+            <View style={[styles.iconWrapper, focused && styles.iconActive]}>
+              <Ionicons name="settings-outline" size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+
+      {/* Hidden screens — still routable but not in tab bar */}
+      <Tabs.Screen name="results" options={{ href: null }} />
+      <Tabs.Screen name="tuner" options={{ href: null }} />
     </Tabs>
   );
 }
@@ -120,6 +122,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   iconActive: {
-    backgroundColor: "rgba(249, 239, 189, 0.15)", // yellow glow on active
+    backgroundColor: "rgba(249, 239, 189, 0.15)",
   },
 });
