@@ -117,8 +117,8 @@ export default function LandingScreen() {
           styles.glowTop,
           {
             backgroundColor: isLight
-              ? "rgba(252, 199, 98, 0.30)"
-              : "rgba(255, 204, 77, 0.18)",
+              ? "rgba(156, 132, 255, 0.26)"
+              : "rgba(168, 127, 255, 0.18)",
           },
         ]}
       />
@@ -148,7 +148,7 @@ export default function LandingScreen() {
           }}
         >
           <Image
-            source={isLight ? LOGO_LIGHT : LOGO_DARK}
+            source={isLight ? LOGO_DARK : LOGO_LIGHT}
             style={{ width: logoSize, height: logoSize * 0.75 }}
             resizeMode="contain"
           />
@@ -165,7 +165,7 @@ export default function LandingScreen() {
             Find your melody
           </Text>
           <Text style={[styles.subtitle, { color: colors.subtitle }]}>
-            Identify songs instantly and tune your sound in one tap.
+            Identify songs instantly and tune your instruments.
           </Text>
         </Animated.View>
 
@@ -182,16 +182,6 @@ export default function LandingScreen() {
             onPress={() => router.push("/identify")}
           >
             <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.secondaryAction}
-            activeOpacity={0.75}
-            onPress={() => router.push("/saved")}
-          >
-            <Text style={[styles.secondaryText, { color: colors.subtitle }]}>
-              View saved songs
-            </Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -271,15 +261,5 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     color: COLOURS.darkBackground,
     letterSpacing: 0.5,
-  },
-  secondaryAction: {
-    marginTop: 14,
-    alignItems: "center",
-  },
-  secondaryText: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    textDecorationLine: "underline",
-    textDecorationStyle: "solid",
   },
 });

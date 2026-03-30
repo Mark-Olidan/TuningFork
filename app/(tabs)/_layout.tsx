@@ -47,6 +47,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Identify",
+          tabBarStyle: { display: "none" },
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="musical-notes" size={22} color={color} />
