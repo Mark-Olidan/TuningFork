@@ -4,13 +4,13 @@ import { useAppTheme } from "@/context/themeContext";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
+    Animated,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
