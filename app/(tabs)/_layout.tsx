@@ -87,7 +87,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="saved"
         options={{
-          title: "Saved",
+          title: "Profile",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="bookmark-outline" size={22} color={color} />

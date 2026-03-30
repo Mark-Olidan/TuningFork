@@ -1,9 +1,10 @@
 // app/(tabs)/practice.tsx
 import { COLOURS } from "@/constants/Colours";
 import { useAppTheme } from "@/context/themeContext";
+import { Ionicons } from "@expo/vector-icons";
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 import { File, Paths } from "expo-file-system";
-import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
@@ -22,8 +23,8 @@ const SOLFEGE_SCALE = [
   { syllable: "Re", note: "D", frequency: 293.66, color: "#E8854B" },
   { syllable: "Mi", note: "E", frequency: 329.63, color: "#D4B800" },
   { syllable: "Fa", note: "F", frequency: 349.23, color: "#4CAF75" },
-  { syllable: "Sol", note: "G", frequency: 392.00, color: "#4BBCE8" },
-  { syllable: "La", note: "A", frequency: 440.00, color: "#5B7CE8" },
+  { syllable: "Sol", note: "G", frequency: 392.0, color: "#4BBCE8" },
+  { syllable: "La", note: "A", frequency: 440.0, color: "#5B7CE8" },
   { syllable: "Ti", note: "B", frequency: 493.88, color: "#9C4BE8" },
 ];
 
@@ -114,20 +115,26 @@ function generateQuestion(type: QuizType): Question {
     correct,
     answers,
     questionText: type === "noteToSolfege" ? correct.note : correct.syllable,
-    prompt: type === "noteToSolfege" ? "Which solfège syllable?" : "Which note is this?",
+    prompt:
+      type === "noteToSolfege"
+        ? "Which solfège syllable?"
+        : "Which note is this?",
   };
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PracticeScreen() {
+  const router = useRouter();
   const { colors, isLight } = useAppTheme();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
   const [mode, setMode] = useState<Mode>("reference");
   const [quizType, setQuizType] = useState<QuizType>("noteToSolfege");
-  const [question, setQuestion] = useState<Question>(() => generateQuestion("noteToSolfege"));
+  const [question, setQuestion] = useState<Question>(() =>
+    generateQuestion("noteToSolfege"),
+  );
   const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0, streak: 0 });
 
@@ -178,7 +185,10 @@ export default function PracticeScreen() {
   }
 
   function playScale() {
-    if (playingScale) { stopScale(); return; }
+    if (playingScale) {
+      stopScale();
+      return;
+    }
     if (!notesReady) return;
     setPlayingScale(true);
     const INTERVAL = 900; // ms between each note
@@ -253,10 +263,31 @@ export default function PracticeScreen() {
         </Text>
       </View>
 
+      <TouchableOpacity
+        style={[
+          styles.tunerBtn,
+          {
+            borderColor: isLight ? "#B7B1A3" : COLOURS.lightPurple + "44",
+            backgroundColor: isLight ? "#E2DBCC" : "rgba(255,255,255,0.06)",
+          },
+        ]}
+        onPress={() => router.push("/tuner")}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="musical-notes" size={16} color={colors.title} />
+        <Text style={[styles.tunerBtnText, { color: colors.title }]}>
+          Open Tuner
+        </Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.subtitle} />
+      </TouchableOpacity>
+
       {/* Mode Toggle */}
       <View style={[styles.modeToggle, { backgroundColor: toggleBg }]}>
         <TouchableOpacity
-          style={[styles.modeButton, mode === "reference" && styles.modeButtonActive]}
+          style={[
+            styles.modeButton,
+            mode === "reference" && styles.modeButtonActive,
+          ]}
           onPress={() => setMode("reference")}
           activeOpacity={0.8}
         >
@@ -271,7 +302,10 @@ export default function PracticeScreen() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.modeButton, mode === "quiz" && styles.modeButtonActive]}
+          style={[
+            styles.modeButton,
+            mode === "quiz" && styles.modeButtonActive,
+          ]}
           onPress={() => setMode("quiz")}
           activeOpacity={0.8}
         >
@@ -303,7 +337,11 @@ export default function PracticeScreen() {
             <TouchableOpacity
               style={[
                 styles.playScaleBtn,
-                { borderColor: playingScale ? COLOURS.brightYellow : colors.border },
+                {
+                  borderColor: playingScale
+                    ? COLOURS.brightYellow
+                    : colors.border,
+                },
                 playingScale && { backgroundColor: "rgba(249,239,189,0.12)" },
               ]}
               onPress={playScale}
@@ -318,7 +356,11 @@ export default function PracticeScreen() {
               <Text
                 style={[
                   styles.playScaleTxt,
-                  { color: playingScale ? COLOURS.brightYellow : colors.subtitle },
+                  {
+                    color: playingScale
+                      ? COLOURS.brightYellow
+                      : colors.subtitle,
+                  },
                 ]}
               >
                 {playingScale ? "Stop" : "Play Scale"}
@@ -374,7 +416,10 @@ export default function PracticeScreen() {
                 </View>
                 <View style={styles.refRightCol}>
                   <Text
-                    style={[styles.refNoteLarge, { color: item.color + (isPlaying ? "EE" : "99") }]}
+                    style={[
+                      styles.refNoteLarge,
+                      { color: item.color + (isPlaying ? "EE" : "99") },
+                    ]}
                   >
                     {item.note}
                   </Text>
@@ -427,13 +472,20 @@ export default function PracticeScreen() {
                   ]}
                 />
                 <View style={styles.refCardBody}>
-                  <Text style={[styles.refSyllable, { color: base.color }]}>Do</Text>
+                  <Text style={[styles.refSyllable, { color: base.color }]}>
+                    Do
+                  </Text>
                   <Text style={[styles.refNote, { color: colors.subtitle }]}>
                     Note — C (octave)
                   </Text>
                 </View>
                 <View style={styles.refRightCol}>
-                  <Text style={[styles.refNoteLarge, { color: base.color + (isPlaying ? "EE" : "99") }]}>
+                  <Text
+                    style={[
+                      styles.refNoteLarge,
+                      { color: base.color + (isPlaying ? "EE" : "99") },
+                    ]}
+                  >
                     C
                   </Text>
                   <Ionicons
@@ -458,7 +510,10 @@ export default function PracticeScreen() {
         >
           {/* Quiz type toggle */}
           <View
-            style={[styles.modeToggle, { backgroundColor: toggleBg, marginBottom: 14 }]}
+            style={[
+              styles.modeToggle,
+              { backgroundColor: toggleBg, marginBottom: 14 },
+            ]}
           >
             <TouchableOpacity
               style={[
@@ -503,10 +558,16 @@ export default function PracticeScreen() {
             <View
               style={[
                 styles.scoreBadge,
-                { backgroundColor: isLight ? "#E2DBCC" : "rgba(255,255,255,0.07)" },
+                {
+                  backgroundColor: isLight
+                    ? "#E2DBCC"
+                    : "rgba(255,255,255,0.07)",
+                },
               ]}
             >
-              <Text style={[styles.scoreLabel, { color: colors.subtitle }]}>Score</Text>
+              <Text style={[styles.scoreLabel, { color: colors.subtitle }]}>
+                Score
+              </Text>
               <Text style={[styles.scoreValue, { color: colors.title }]}>
                 {score.correct}/{score.total}
               </Text>
@@ -514,10 +575,16 @@ export default function PracticeScreen() {
             <View
               style={[
                 styles.scoreBadge,
-                { backgroundColor: isLight ? "#E2DBCC" : "rgba(255,255,255,0.07)" },
+                {
+                  backgroundColor: isLight
+                    ? "#E2DBCC"
+                    : "rgba(255,255,255,0.07)",
+                },
               ]}
             >
-              <Text style={[styles.scoreLabel, { color: colors.subtitle }]}>Streak</Text>
+              <Text style={[styles.scoreLabel, { color: colors.subtitle }]}>
+                Streak
+              </Text>
               <Text
                 style={[
                   styles.scoreValue,
@@ -533,7 +600,9 @@ export default function PracticeScreen() {
               onPress={resetScore}
               activeOpacity={0.7}
             >
-              <Text style={[styles.resetTxt, { color: colors.subtitle }]}>Reset</Text>
+              <Text style={[styles.resetTxt, { color: colors.subtitle }]}>
+                Reset
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -545,16 +614,25 @@ export default function PracticeScreen() {
               <TouchableOpacity
                 style={[
                   styles.quizSpeakerBtn,
-                  playingNote === question.correct.note && styles.quizSpeakerBtnActive,
+                  playingNote === question.correct.note &&
+                    styles.quizSpeakerBtnActive,
                 ]}
                 onPress={() => playNote(question.correct.note)}
                 activeOpacity={0.7}
                 disabled={!notesReady}
               >
                 <Ionicons
-                  name={playingNote === question.correct.note ? "volume-high" : "volume-medium-outline"}
+                  name={
+                    playingNote === question.correct.note
+                      ? "volume-high"
+                      : "volume-medium-outline"
+                  }
                   size={22}
-                  color={playingNote === question.correct.note ? COLOURS.brightYellow : COLOURS.lightPurple}
+                  color={
+                    playingNote === question.correct.note
+                      ? COLOURS.brightYellow
+                      : COLOURS.lightPurple
+                  }
                 />
               </TouchableOpacity>
             </View>
@@ -572,7 +650,9 @@ export default function PracticeScreen() {
                   style={[
                     styles.answerBtn,
                     {
-                      borderColor: isLight ? "#B7B1A3" : COLOURS.lightPurple + "44",
+                      borderColor: isLight
+                        ? "#B7B1A3"
+                        : COLOURS.lightPurple + "44",
                       backgroundColor: cardBg,
                     },
                     isAnswered && isCorrect && styles.answerCorrect,
@@ -588,10 +668,14 @@ export default function PracticeScreen() {
                       styles.answerTxt,
                       { color: colors.title },
                       isAnswered && isCorrect && { color: "#4CAF75" },
-                      isAnswered && isChosen && !isCorrect && { color: "#E84B6E" },
+                      isAnswered &&
+                        isChosen &&
+                        !isCorrect && { color: "#E84B6E" },
                     ]}
                   >
-                    {quizType === "noteToSolfege" ? answer.syllable : answer.note}
+                    {quizType === "noteToSolfege"
+                      ? answer.syllable
+                      : answer.note}
                   </Text>
                 </TouchableOpacity>
               );
@@ -636,6 +720,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Inter_400Regular",
     marginTop: 4,
+  },
+  tunerBtn: {
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  tunerBtnText: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 14,
   },
 
   // Mode toggle (shared by reference/quiz type toggles)
