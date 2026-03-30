@@ -1,9 +1,14 @@
-// app/(tabs)/index.tsx
 import { COLOURS } from "@/constants/Colours";
 import { useAppTheme } from "@/context/themeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -30,7 +35,7 @@ export default function HomeScreen() {
             isLandscape && styles.appNameLandscape,
           ]}
         >
-          Tuning Fork
+          Identify
         </Text>
         <Text
           style={[
@@ -55,9 +60,21 @@ export default function HomeScreen() {
           onPress={() => router.push("/screens/ListeningState")}
         >
           {/* Triple ring circle */}
-          <View style={[styles.bigCircle, isLandscape && styles.bigCircleLandscape]}>
-            <View style={[styles.middleCircle, isLandscape && styles.middleCircleLandscape]}>
-              <View style={[styles.innerCircle, isLandscape && styles.innerCircleLandscape]}>
+          <View
+            style={[styles.bigCircle, isLandscape && styles.bigCircleLandscape]}
+          >
+            <View
+              style={[
+                styles.middleCircle,
+                isLandscape && styles.middleCircleLandscape,
+              ]}
+            >
+              <View
+                style={[
+                  styles.innerCircle,
+                  isLandscape && styles.innerCircleLandscape,
+                ]}
+              >
                 <Ionicons
                   name="musical-notes"
                   size={isLandscape ? 44 : 64}
@@ -178,7 +195,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16, // 👈 gap between card and hum row
+    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -271,7 +288,7 @@ const styles = StyleSheet.create({
   humRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLOURS.brightYellow, // 👈 yellow
+    backgroundColor: COLOURS.brightYellow,
     borderRadius: 20,
     padding: 16,
     marginTop: 8,
@@ -291,7 +308,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: "rgba(39, 40, 50, 0.15)", // subtle dark tint on yellow
+    backgroundColor: "rgba(39, 40, 50, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },

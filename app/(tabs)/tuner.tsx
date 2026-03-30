@@ -553,6 +553,9 @@ export default function TunerScreen() {
               onPress={tuneAll}
               disabled={!tonesReady}
               activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel={tuningAll ? "Stop tune all" : "Tune all strings"}
+              accessibilityHint="Plays reference tones for each string in sequence"
             >
               <Ionicons name={tuningAll ? "stop" : "play"} size={13} color={tuningAll ? COLOURS.brightYellow : colors.subtitle} />
               <Text style={[styles.tuneAllTxt, { color: tuningAll ? COLOURS.brightYellow : colors.subtitle }]}>
@@ -707,6 +710,9 @@ export default function TunerScreen() {
               style={[styles.listenBtn, listening && styles.listenBtnActive]}
               onPress={listening ? stopListening : startListening}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={listening ? "Stop listening" : "Start listening"}
+              accessibilityHint="Starts or stops microphone tuning mode"
             >
               <Ionicons
                 name={listening ? "stop-circle" : "mic"}

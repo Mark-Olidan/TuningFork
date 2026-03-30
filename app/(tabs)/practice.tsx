@@ -273,6 +273,9 @@ export default function PracticeScreen() {
         ]}
         onPress={() => router.push("/tuner")}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Open tuner"
+        accessibilityHint="Opens the instrument tuner screen"
       >
         <Ionicons name="musical-notes" size={16} color={colors.title} />
         <Text style={[styles.tunerBtnText, { color: colors.title }]}>

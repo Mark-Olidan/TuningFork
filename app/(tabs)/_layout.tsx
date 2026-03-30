@@ -9,17 +9,20 @@ export default function TabLayout() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { colors, isLight } = useAppTheme();
+  const lightTabBarBg = "#D6CCB8";
+  const lightTabBarBorder = "#B8AD96";
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.tabBar,
-          borderTopWidth: 0,
-          height: isLandscape ? 58 : 70,
-          paddingBottom: isLandscape ? 6 : 10,
-          paddingTop: isLandscape ? 6 : 8,
+          backgroundColor: isLight ? lightTabBarBg : colors.tabBar,
+          borderTopWidth: isLight ? 1 : 0,
+          borderTopColor: isLight ? lightTabBarBorder : "transparent",
+          height: isLandscape ? 62 : 76,
+          paddingBottom: isLandscape ? 8 : 14,
+          paddingTop: isLandscape ? 6 : 9,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           marginHorizontal: 0,
@@ -28,9 +31,9 @@ export default function TabLayout() {
           left: 0,
           right: 0,
           bottom: 0,
-          shadowColor: isLight ? "#AAA08C" : COLOURS.primaryPurple,
+          shadowColor: isLight ? "#908066" : COLOURS.primaryPurple,
           shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.4,
+          shadowOpacity: isLight ? 0.26 : 0.4,
           shadowRadius: 10,
           elevation: 20,
         },
@@ -39,7 +42,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: isLandscape ? 10 : 11,
           fontWeight: "600",
-          marginTop: isLandscape ? 1 : 2,
+          marginTop: 0,
         },
       }}
     >
@@ -49,6 +52,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarStyle: { display: "none" },
+          tabBarAccessibilityLabel: "Home tab",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="home-outline" size={22} color={color} />
@@ -62,6 +66,7 @@ export default function TabLayout() {
         name="identify"
         options={{
           title: "Identify",
+          tabBarAccessibilityLabel: "Identify tab",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="musical-notes" size={22} color={color} />
@@ -75,6 +80,7 @@ export default function TabLayout() {
         name="practice"
         options={{
           title: "Practice",
+          tabBarAccessibilityLabel: "Practice tab",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="school-outline" size={22} color={color} />
@@ -88,6 +94,7 @@ export default function TabLayout() {
         name="saved"
         options={{
           title: "Profile",
+          tabBarAccessibilityLabel: "Profile tab",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="bookmark-outline" size={22} color={color} />
@@ -101,6 +108,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: "Settings",
+          tabBarAccessibilityLabel: "Settings tab",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Ionicons name="settings-outline" size={22} color={color} />

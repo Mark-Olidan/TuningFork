@@ -180,6 +180,9 @@ export default function LandingScreen() {
             style={styles.button}
             activeOpacity={0.85}
             onPress={() => router.push("/identify")}
+            accessibilityRole="button"
+            accessibilityLabel="Get started"
+            accessibilityHint="Opens the identify screen"
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
