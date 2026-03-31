@@ -11,6 +11,7 @@ import {
   Dimensions,
   Easing,
   Image,
+  ScrollView,
   Share,
   StyleSheet,
   Text,
@@ -18,6 +19,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useSuggestions } from "@/hooks/use-suggestions";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -129,6 +131,7 @@ export default function SongResult() {
 
   const [albumArtUri, setAlbumArtUri] = useState(song.albumArt);
   const [saved, setSaved] = useState(false);
+  const { suggestions } = useSuggestions(song.title, song.artist);
 
   const cardSlide = useRef(new Animated.Value(80)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
@@ -214,17 +217,30 @@ export default function SongResult() {
         ))}
       </View>
 
-      {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
-      </TouchableOpacity>
+      {/* Top bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.homeButton} onPress={() => router.push("/")}>
+          <Ionicons name="home-outline" size={24} color={colors.subtitle} />
+        </TouchableOpacity>
+      </View>
 
       {/* Found it header */}
       <View style={[styles.header, isLandscape && styles.headerLandscape]}>
-        <Text style={[styles.foundText, { color: colors.title }, isLandscape && styles.foundTextLandscape]}>
+        <Text
+          style={[
+            styles.foundText,
+            { color: colors.title },
+            isLandscape && styles.foundTextLandscape,
+          ]}
+        >
           Found it! 🎉
         </Text>
-        <Text style={[styles.foundSubtext, { color: colors.subtitle }]}>Here is your song</Text>
+        <Text style={[styles.foundSubtext, { color: colors.subtitle }]}>
+          Here is your song
+        </Text>
       </View>
 
       <View style={[styles.contentWrap, isLandscape && styles.contentWrapLandscape]}>
@@ -243,15 +259,22 @@ export default function SongResult() {
             onError={() => setAlbumArtUri(DEFAULT_ARTWORK)}
           />
           <View style={styles.songInfo}>
-            <Text style={[styles.songTitle, isLandscape && styles.songTitleLandscape]}>{song.title}</Text>
+            <Text style={[styles.songTitle, isLandscape && styles.songTitleLandscape]}>
+              {song.title}
+            </Text>
             <Text style={styles.songArtist}>{song.artist}</Text>
             <Text style={styles.songAlbum}>{song.album}</Text>
           </View>
         </Animated.View>
 
         {/* Action Buttons */}
-        <Animated.View style={[styles.actions, isLandscape && styles.actionsLandscape, { opacity: cardOpacity }]}>
-
+        <Animated.View
+          style={[
+            styles.actions,
+            isLandscape && styles.actionsLandscape,
+            { opacity: cardOpacity },
+          ]}
+        >
           {/* Save + Share */}
           <View style={styles.secondaryRow}>
             <TouchableOpacity
@@ -259,8 +282,14 @@ export default function SongResult() {
               activeOpacity={0.8}
               onPress={() => void handleSave()}
             >
-              <Ionicons name={saved ? "bookmark" : "bookmark-outline"} size={20} color={colors.title} />
-              <Text style={[styles.secondaryText, { color: colors.title }]}>{saved ? "Saved" : "Save"}</Text>
+              <Ionicons
+                name={saved ? "bookmark" : "bookmark-outline"}
+                size={20}
+                color={colors.title}
+              />
+              <Text style={[styles.secondaryText, { color: colors.title }]}>
+                {saved ? "Saved" : "Save"}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.secondaryButton, isCompactLandscape && styles.secondaryButtonCompact]}
@@ -272,12 +301,14 @@ export default function SongResult() {
             </TouchableOpacity>
           </View>
 
-          {/* Sheet Music + Chords row */}
+          {/* Sheet Music + Chords */}
           <View style={styles.secondaryRow}>
             <TouchableOpacity
               style={[styles.musicButton, isCompactLandscape && styles.musicButtonCompact]}
               activeOpacity={0.85}
-              onPress={() => router.push({ pathname: "/screens/SheetMusicScreen" as any, params: navParams })}
+              onPress={() =>
+                router.push({ pathname: "/screens/SheetMusicScreen" as any, params: navParams })
+              }
             >
               <Ionicons name="musical-note-outline" size={20} color={COLOURS.darkBackground} />
               <Text style={styles.musicButtonText}>Sheet Music</Text>
@@ -285,13 +316,14 @@ export default function SongResult() {
             <TouchableOpacity
               style={[styles.musicButton, isCompactLandscape && styles.musicButtonCompact]}
               activeOpacity={0.85}
-              onPress={() => router.push({ pathname: "/screens/ChordScreen" as any, params: navParams })}
+              onPress={() =>
+                router.push({ pathname: "/screens/ChordScreen" as any, params: navParams })
+              }
             >
               <Ionicons name="options-outline" size={20} color={COLOURS.darkBackground} />
               <Text style={styles.musicButtonText}>Chords</Text>
             </TouchableOpacity>
           </View>
-
         </Animated.View>
       </View>
 
@@ -300,8 +332,59 @@ export default function SongResult() {
         style={styles.tryAgain}
         onPress={() => router.push("/screens/ListeningState")}
       >
-        <Text style={[styles.tryAgainText, { color: colors.subtitle }]}>Identify Another Song</Text>
+        <Text style={[styles.tryAgainText, { color: colors.subtitle }]}>
+          Identify Another Song
+        </Text>
       </TouchableOpacity>
+
+      {/* Suggested Songs */}
+      {suggestions.length > 0 && (
+        <View style={styles.suggestionsContainer}>
+          <Text style={styles.suggestionsLabel}>You might also like</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.suggestionsScroll}
+          >
+            {suggestions.map((s, i) => (
+              <TouchableOpacity
+                key={i}
+                activeOpacity={0.8}
+                style={styles.suggestionCard}
+                onPress={() =>
+                  router.replace({
+                    pathname: "/screens/SongResult",
+                    params: {
+                      title: s.title,
+                      artist: s.artist,
+                      artwork: s.artwork ?? "",
+                      album: "",
+                    },
+                  })
+                }
+              >
+                {s.artwork ? (
+                  <Image
+                    source={{ uri: s.artwork }}
+                    style={styles.suggestionArt}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={[styles.suggestionArt, styles.suggestionArtPlaceholder]} />
+                )}
+                <View style={styles.suggestionInfo}>
+                  <Text numberOfLines={1} style={styles.suggestionTitle}>
+                    {s.title}
+                  </Text>
+                  <Text numberOfLines={1} style={styles.suggestionArtist}>
+                    {s.artist}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -317,11 +400,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
-  backButton: {
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 8,
+  },
+  backButton: {
     width: 40,
     height: 40,
     justifyContent: "center",
+  },
+  homeButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   header: {
     alignItems: "center",
@@ -457,5 +551,45 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLOURS.lightPurple,
     textDecorationLine: "underline",
+  },
+  suggestionsContainer: {
+    marginTop: 20,
+  },
+  suggestionsLabel: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 14,
+    color: COLOURS.lightPurple,
+    marginBottom: 12,
+  },
+  suggestionsScroll: {
+    gap: 12,
+    paddingBottom: 4,
+  },
+  suggestionCard: {
+    width: 120,
+    borderRadius: 14,
+    overflow: "hidden",
+    backgroundColor: COLOURS.primaryPurple,
+  },
+  suggestionArt: {
+    width: 120,
+    height: 120,
+  },
+  suggestionArtPlaceholder: {
+    backgroundColor: COLOURS.primaryPurple,
+  },
+  suggestionInfo: {
+    padding: 8,
+    gap: 2,
+  },
+  suggestionTitle: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 12,
+    color: "#FFFFFF",
+  },
+  suggestionArtist: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 11,
+    color: COLOURS.lightPurple,
   },
 });

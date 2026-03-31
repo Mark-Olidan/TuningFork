@@ -155,7 +155,8 @@ export default function ListeningState() {
       router.replace({
         pathname: "/screens/ErrorRetry",
         params: {
-          reason: error || "No match found.",
+          type: status,
+          reason: error ?? undefined,
         },
       });
     }
@@ -177,7 +178,9 @@ export default function ListeningState() {
   });
 
   const statusLabel =
-    status === "uploading" ? "ANALYZING YOUR RECORDING..." : "CAPTURING THE BEAT...";
+    status === "uploading"
+      ? "ANALYZING YOUR RECORDING..."
+      : "CAPTURING THE BEAT...";
 
   return (
     <SafeAreaView
@@ -193,9 +196,19 @@ export default function ListeningState() {
       </TouchableOpacity>
 
       {/* Center content */}
-      <View style={[styles.centerContent, isLandscape && styles.centerContentLandscape]}>
+      <View
+        style={[
+          styles.centerContent,
+          isLandscape && styles.centerContentLandscape,
+        ]}
+      >
         {/* Rings + Smiley */}
-        <View style={[styles.ringContainer, isLandscape && styles.ringContainerLandscape]}>
+        <View
+          style={[
+            styles.ringContainer,
+            isLandscape && styles.ringContainerLandscape,
+          ]}
+        >
           <Animated.View style={ringStyle(ring1, isLandscape ? 220 : 320)} />
           <Animated.View style={ringStyle(ring2, isLandscape ? 220 : 320)} />
           <Animated.View style={ringStyle(ring3, isLandscape ? 220 : 320)} />
@@ -219,7 +232,12 @@ export default function ListeningState() {
         </View>
 
         {/* Capturing text */}
-        <Animated.Text style={[styles.capturingText, { opacity: dotsOpacity, color: colors.title }]}>
+        <Animated.Text
+          style={[
+            styles.capturingText,
+            { opacity: dotsOpacity, color: colors.title },
+          ]}
+        >
           {statusLabel}
         </Animated.Text>
       </View>
@@ -232,7 +250,9 @@ export default function ListeningState() {
           router.back();
         }}
       >
-        <Text style={[styles.cancelText, { color: colors.subtitle }]}>Cancel</Text>
+        <Text style={[styles.cancelText, { color: colors.subtitle }]}>
+          Cancel
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
