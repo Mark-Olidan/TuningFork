@@ -72,8 +72,7 @@ function ConfettiPiece({ delay, x }: { delay: number; x: number }) {
     ]).start();
   }, []);
 
-  const color =
-    CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+  const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
   const size = Math.random() * 8 + 6;
 
   return (
@@ -106,9 +105,7 @@ const DEFAULT_ARTWORK =
   "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_After_Hours.png";
 
 const pickParam = (value: string | string[] | undefined) => {
-  if (Array.isArray(value)) {
-    return value[0];
-  }
+  if (Array.isArray(value)) return value[0];
   return value;
 };
 
@@ -158,7 +155,6 @@ export default function SongResult() {
       });
       setSaved(alreadySaved);
     };
-
     void checkIfSaved();
   }, [song.album, song.artist, song.title]);
 
@@ -176,7 +172,6 @@ export default function SongResult() {
   const handleShare = async () => {
     try {
       const shareText = `Check out this song I found on Tuning Fork:\n${song.title} - ${song.artist}${song.album ? `\nAlbum: ${song.album}` : ""}`;
-
       await Share.share({
         message: shareText,
         url: albumArtUri,
@@ -186,6 +181,8 @@ export default function SongResult() {
       Alert.alert("Share unavailable", "Could not open the share menu.");
     }
   };
+
+  const navParams = { title: song.title, artist: song.artist };
 
   useEffect(() => {
     Animated.parallel([
@@ -222,16 +219,10 @@ export default function SongResult() {
 
       {/* Top bar */}
       <View style={styles.topBar}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.subtitle} />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={() => router.push("/")}
-        >
+        <TouchableOpacity style={styles.homeButton} onPress={() => router.push("/")}>
           <Ionicons name="home-outline" size={24} color={colors.subtitle} />
         </TouchableOpacity>
       </View>
@@ -252,9 +243,7 @@ export default function SongResult() {
         </Text>
       </View>
 
-      <View
-        style={[styles.contentWrap, isLandscape && styles.contentWrapLandscape]}
-      >
+      <View style={[styles.contentWrap, isLandscape && styles.contentWrapLandscape]}>
         {/* Song Card */}
         <Animated.View
           style={[
@@ -270,12 +259,7 @@ export default function SongResult() {
             onError={() => setAlbumArtUri(DEFAULT_ARTWORK)}
           />
           <View style={styles.songInfo}>
-            <Text
-              style={[
-                styles.songTitle,
-                isLandscape && styles.songTitleLandscape,
-              ]}
-            >
+            <Text style={[styles.songTitle, isLandscape && styles.songTitleLandscape]}>
               {song.title}
             </Text>
             <Text style={styles.songArtist}>{song.artist}</Text>
@@ -294,10 +278,7 @@ export default function SongResult() {
           {/* Save + Share */}
           <View style={styles.secondaryRow}>
             <TouchableOpacity
-              style={[
-                styles.secondaryButton,
-                isCompactLandscape && styles.secondaryButtonCompact,
-              ]}
+              style={[styles.secondaryButton, isCompactLandscape && styles.secondaryButtonCompact]}
               activeOpacity={0.8}
               onPress={() => void handleSave()}
             >
@@ -311,35 +292,38 @@ export default function SongResult() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.secondaryButton,
-                isCompactLandscape && styles.secondaryButtonCompact,
-              ]}
+              style={[styles.secondaryButton, isCompactLandscape && styles.secondaryButtonCompact]}
               activeOpacity={0.8}
               onPress={() => void handleShare()}
             >
               <Ionicons name="share-outline" size={20} color={colors.title} />
-              <Text style={[styles.secondaryText, { color: colors.title }]}>
-                Share
-              </Text>
+              <Text style={[styles.secondaryText, { color: colors.title }]}>Share</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Sheet Music */}
-          <TouchableOpacity
-            style={[
-              styles.sheetMusicButton,
-              isCompactLandscape && styles.sheetMusicButtonCompact,
-            ]}
-            activeOpacity={0.85}
-          >
-            <Ionicons
-              name="document-text-outline"
-              size={20}
-              color={COLOURS.darkBackground}
-            />
-            <Text style={styles.sheetMusicText}>View Sheet Music</Text>
-          </TouchableOpacity>
+          {/* Sheet Music + Chords */}
+          <View style={styles.secondaryRow}>
+            <TouchableOpacity
+              style={[styles.musicButton, isCompactLandscape && styles.musicButtonCompact]}
+              activeOpacity={0.85}
+              onPress={() =>
+                router.push({ pathname: "/screens/SheetMusicScreen" as any, params: navParams })
+              }
+            >
+              <Ionicons name="musical-note-outline" size={20} color={COLOURS.darkBackground} />
+              <Text style={styles.musicButtonText}>Sheet Music</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.musicButton, isCompactLandscape && styles.musicButtonCompact]}
+              activeOpacity={0.85}
+              onPress={() =>
+                router.push({ pathname: "/screens/ChordScreen" as any, params: navParams })
+              }
+            >
+              <Ionicons name="options-outline" size={20} color={COLOURS.darkBackground} />
+              <Text style={styles.musicButtonText}>Chords</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
 
@@ -457,7 +441,6 @@ const styles = StyleSheet.create({
     color: COLOURS.lightPurple,
     marginTop: 4,
   },
-
   contentWrap: {
     flex: 1,
   },
@@ -465,10 +448,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
   },
-
-  // Song card — big and fills space
   songCard: {
-    flex: 1, // 👈 fills remaining space
+    flex: 1,
     backgroundColor: COLOURS.primaryPurple,
     borderRadius: 28,
     overflow: "hidden",
@@ -485,7 +466,7 @@ const styles = StyleSheet.create({
   },
   albumArt: {
     width: "100%",
-    flex: 1, // 👈 art takes up all available card space
+    flex: 1,
   },
   songInfo: {
     padding: 24,
@@ -522,7 +503,6 @@ const styles = StyleSheet.create({
   secondaryRow: {
     flexDirection: "row",
     gap: 12,
-    flexWrap: "wrap",
   },
   secondaryButton: {
     flex: 1,
@@ -543,20 +523,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLOURS.brightYellow,
   },
-  sheetMusicButton: {
-    backgroundColor: COLOURS.lightPurple,
+  musicButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
     borderRadius: 18,
     gap: 8,
+    backgroundColor: COLOURS.lightPurple,
     minHeight: 44,
   },
-  sheetMusicButtonCompact: {
+  musicButtonCompact: {
     paddingVertical: 12,
   },
-  sheetMusicText: {
+  musicButtonText: {
     fontFamily: "Inter_700Bold",
     fontSize: 15,
     color: COLOURS.darkBackground,
