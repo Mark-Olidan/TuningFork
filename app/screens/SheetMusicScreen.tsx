@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const API_BASE_URL = "http://10.0.0.222:8000"; // ← update to your machine's LAN IP
+const API_BASE_URL = process.env.EXPO_PUBLIC_SHEET_MUSIC_URL ?? "http://localhost:8000";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Status = "loading" | "rendering" | "done" | "error";

@@ -95,7 +95,7 @@ export function useIdentifySong() {
 		try {
 			payload = JSON.parse(text) as IdentifyResponse;
 		} catch {
-			throw new Error("Cannot reach the identify server. Make sure the backend and ngrok tunnel are running.");
+			throw new Error("Cannot reach the identify server. Make sure the backend is running.");
 		}
 			if (!response.ok || !payload.ok) {
 				throw new Error(payload.error || "Identification request failed.");
