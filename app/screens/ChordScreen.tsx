@@ -18,7 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const API_BASE_URL = "http://10.0.0.222:8000";
+const API_BASE_URL = process.env.EXPO_PUBLIC_SHEET_MUSIC_URL ?? "http://localhost:8000";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 

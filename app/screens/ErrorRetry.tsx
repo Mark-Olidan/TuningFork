@@ -214,7 +214,7 @@ export default function ErrorRetry() {
               isLandscape && styles.errorTitleLandscape,
             ]}
           >
-            {isNoMatch ? "We heard you!" : "Could not catch that"}
+            {isNoMatch ? "No match found" : "Could not catch that"}
           </Text>
           <Text style={[styles.errorSubtitle, { color: colors.subtitle }]}>
             {isNoMatch
