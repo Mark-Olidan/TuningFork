@@ -1,6 +1,7 @@
 // app/(tabs)/tuner.tsx
 import { COLOURS } from "@/constants/Colours";
 import { useAppTheme } from "@/context/themeContext";
+import { Ionicons } from "@expo/vector-icons";
 import {
   AudioQuality,
   RecordingOptions,
@@ -10,7 +11,6 @@ import {
   useAudioRecorder,
 } from "expo-audio";
 import { File, Paths } from "expo-file-system";
-import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ScrollView,
@@ -47,12 +47,60 @@ const INSTRUMENTS: Instrument[] = [
     name: "Guitar",
     tuning: "Standard",
     strings: [
-      { string: 6, note: "E", octave: 2, label: "Low E",  frequency: 82.41,  thickness: 7, color: "#C9813A" },
-      { string: 5, note: "A", octave: 2, label: "A",      frequency: 110.00, thickness: 6, color: "#C9A83A" },
-      { string: 4, note: "D", octave: 3, label: "D",      frequency: 146.83, thickness: 5, color: "#6BAF6B" },
-      { string: 3, note: "G", octave: 3, label: "G",      frequency: 196.00, thickness: 4, color: "#4BBCE8" },
-      { string: 2, note: "B", octave: 3, label: "B",      frequency: 246.94, thickness: 3, color: "#7B8FE8" },
-      { string: 1, note: "E", octave: 4, label: "High E", frequency: 329.63, thickness: 2, color: "#C07BE8" },
+      {
+        string: 6,
+        note: "E",
+        octave: 2,
+        label: "Low E",
+        frequency: 82.41,
+        thickness: 7,
+        color: "#C9813A",
+      },
+      {
+        string: 5,
+        note: "A",
+        octave: 2,
+        label: "A",
+        frequency: 110.0,
+        thickness: 6,
+        color: "#C9A83A",
+      },
+      {
+        string: 4,
+        note: "D",
+        octave: 3,
+        label: "D",
+        frequency: 146.83,
+        thickness: 5,
+        color: "#6BAF6B",
+      },
+      {
+        string: 3,
+        note: "G",
+        octave: 3,
+        label: "G",
+        frequency: 196.0,
+        thickness: 4,
+        color: "#4BBCE8",
+      },
+      {
+        string: 2,
+        note: "B",
+        octave: 3,
+        label: "B",
+        frequency: 246.94,
+        thickness: 3,
+        color: "#7B8FE8",
+      },
+      {
+        string: 1,
+        note: "E",
+        octave: 4,
+        label: "High E",
+        frequency: 329.63,
+        thickness: 2,
+        color: "#C07BE8",
+      },
     ],
   },
   {
@@ -60,12 +108,60 @@ const INSTRUMENTS: Instrument[] = [
     name: "Guitar",
     tuning: "Drop D",
     strings: [
-      { string: 6, note: "D", octave: 2, label: "Drop D", frequency: 73.42,  thickness: 7, color: "#C9813A" },
-      { string: 5, note: "A", octave: 2, label: "A",      frequency: 110.00, thickness: 6, color: "#C9A83A" },
-      { string: 4, note: "D", octave: 3, label: "D",      frequency: 146.83, thickness: 5, color: "#6BAF6B" },
-      { string: 3, note: "G", octave: 3, label: "G",      frequency: 196.00, thickness: 4, color: "#4BBCE8" },
-      { string: 2, note: "B", octave: 3, label: "B",      frequency: 246.94, thickness: 3, color: "#7B8FE8" },
-      { string: 1, note: "E", octave: 4, label: "High E", frequency: 329.63, thickness: 2, color: "#C07BE8" },
+      {
+        string: 6,
+        note: "D",
+        octave: 2,
+        label: "Drop D",
+        frequency: 73.42,
+        thickness: 7,
+        color: "#C9813A",
+      },
+      {
+        string: 5,
+        note: "A",
+        octave: 2,
+        label: "A",
+        frequency: 110.0,
+        thickness: 6,
+        color: "#C9A83A",
+      },
+      {
+        string: 4,
+        note: "D",
+        octave: 3,
+        label: "D",
+        frequency: 146.83,
+        thickness: 5,
+        color: "#6BAF6B",
+      },
+      {
+        string: 3,
+        note: "G",
+        octave: 3,
+        label: "G",
+        frequency: 196.0,
+        thickness: 4,
+        color: "#4BBCE8",
+      },
+      {
+        string: 2,
+        note: "B",
+        octave: 3,
+        label: "B",
+        frequency: 246.94,
+        thickness: 3,
+        color: "#7B8FE8",
+      },
+      {
+        string: 1,
+        note: "E",
+        octave: 4,
+        label: "High E",
+        frequency: 329.63,
+        thickness: 2,
+        color: "#C07BE8",
+      },
     ],
   },
   {
@@ -73,10 +169,42 @@ const INSTRUMENTS: Instrument[] = [
     name: "Bass",
     tuning: "Standard",
     strings: [
-      { string: 4, note: "E", octave: 1, label: "Low E", frequency: 41.20, thickness: 7, color: "#C9813A" },
-      { string: 3, note: "A", octave: 1, label: "A",     frequency: 55.00, thickness: 6, color: "#C9A83A" },
-      { string: 2, note: "D", octave: 2, label: "D",     frequency: 73.42, thickness: 5, color: "#6BAF6B" },
-      { string: 1, note: "G", octave: 2, label: "G",     frequency: 98.00, thickness: 4, color: "#4BBCE8" },
+      {
+        string: 4,
+        note: "E",
+        octave: 1,
+        label: "Low E",
+        frequency: 41.2,
+        thickness: 7,
+        color: "#C9813A",
+      },
+      {
+        string: 3,
+        note: "A",
+        octave: 1,
+        label: "A",
+        frequency: 55.0,
+        thickness: 6,
+        color: "#C9A83A",
+      },
+      {
+        string: 2,
+        note: "D",
+        octave: 2,
+        label: "D",
+        frequency: 73.42,
+        thickness: 5,
+        color: "#6BAF6B",
+      },
+      {
+        string: 1,
+        note: "G",
+        octave: 2,
+        label: "G",
+        frequency: 98.0,
+        thickness: 4,
+        color: "#4BBCE8",
+      },
     ],
   },
   {
@@ -84,10 +212,42 @@ const INSTRUMENTS: Instrument[] = [
     name: "Ukulele",
     tuning: "Standard",
     strings: [
-      { string: 4, note: "G", octave: 4, label: "G",  frequency: 392.00, thickness: 3, color: "#4BBCE8" },
-      { string: 3, note: "C", octave: 4, label: "C",  frequency: 261.63, thickness: 5, color: "#6BAF6B" },
-      { string: 2, note: "E", octave: 4, label: "E",  frequency: 329.63, thickness: 4, color: "#D4B800" },
-      { string: 1, note: "A", octave: 4, label: "A",  frequency: 440.00, thickness: 2, color: "#C9A83A" },
+      {
+        string: 4,
+        note: "G",
+        octave: 4,
+        label: "G",
+        frequency: 392.0,
+        thickness: 3,
+        color: "#4BBCE8",
+      },
+      {
+        string: 3,
+        note: "C",
+        octave: 4,
+        label: "C",
+        frequency: 261.63,
+        thickness: 5,
+        color: "#6BAF6B",
+      },
+      {
+        string: 2,
+        note: "E",
+        octave: 4,
+        label: "E",
+        frequency: 329.63,
+        thickness: 4,
+        color: "#D4B800",
+      },
+      {
+        string: 1,
+        note: "A",
+        octave: 4,
+        label: "A",
+        frequency: 440.0,
+        thickness: 2,
+        color: "#C9A83A",
+      },
     ],
   },
   {
@@ -95,10 +255,42 @@ const INSTRUMENTS: Instrument[] = [
     name: "Violin",
     tuning: "Standard",
     strings: [
-      { string: 4, note: "G", octave: 3, label: "G", frequency: 196.00, thickness: 5, color: "#4BBCE8" },
-      { string: 3, note: "D", octave: 4, label: "D", frequency: 293.66, thickness: 4, color: "#6BAF6B" },
-      { string: 2, note: "A", octave: 4, label: "A", frequency: 440.00, thickness: 3, color: "#C9A83A" },
-      { string: 1, note: "E", octave: 5, label: "E", frequency: 659.25, thickness: 2, color: "#C07BE8" },
+      {
+        string: 4,
+        note: "G",
+        octave: 3,
+        label: "G",
+        frequency: 196.0,
+        thickness: 5,
+        color: "#4BBCE8",
+      },
+      {
+        string: 3,
+        note: "D",
+        octave: 4,
+        label: "D",
+        frequency: 293.66,
+        thickness: 4,
+        color: "#6BAF6B",
+      },
+      {
+        string: 2,
+        note: "A",
+        octave: 4,
+        label: "A",
+        frequency: 440.0,
+        thickness: 3,
+        color: "#C9A83A",
+      },
+      {
+        string: 1,
+        note: "E",
+        octave: 5,
+        label: "E",
+        frequency: 659.25,
+        thickness: 2,
+        color: "#C07BE8",
+      },
     ],
   },
 ];
@@ -142,21 +334,29 @@ function makeGuitarWAV(frequency: number): Uint8Array {
   const str = (off: number, s: string) => {
     for (let i = 0; i < s.length; i++) v.setUint8(off + i, s.charCodeAt(i));
   };
-  str(0, "RIFF"); v.setUint32(4, 36 + dataSize, true); str(8, "WAVE");
-  str(12, "fmt "); v.setUint32(16, 16, true);
-  v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
-  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
-  str(36, "data"); v.setUint32(40, dataSize, true);
+  str(0, "RIFF");
+  v.setUint32(4, 36 + dataSize, true);
+  str(8, "WAVE");
+  str(12, "fmt ");
+  v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true);
+  v.setUint16(22, 1, true);
+  v.setUint32(24, sampleRate, true);
+  v.setUint32(28, sampleRate * 2, true);
+  v.setUint16(32, 2, true);
+  v.setUint16(34, 16, true);
+  str(36, "data");
+  v.setUint32(40, dataSize, true);
   const attackSamples = Math.floor(sampleRate * 0.004);
   const f = frequency;
   for (let i = 0; i < numSamples; i++) {
     const t = i / sampleRate;
-    const wave = Math.sin(2 * Math.PI * f * t)
-      + 0.5  * Math.sin(2 * Math.PI * 2 * f * t)
-      + 0.25 * Math.sin(2 * Math.PI * 3 * f * t)
-      + 0.12 * Math.sin(2 * Math.PI * 4 * f * t)
-      + 0.06 * Math.sin(2 * Math.PI * 5 * f * t);
+    const wave =
+      Math.sin(2 * Math.PI * f * t) +
+      0.5 * Math.sin(2 * Math.PI * 2 * f * t) +
+      0.25 * Math.sin(2 * Math.PI * 3 * f * t) +
+      0.12 * Math.sin(2 * Math.PI * 4 * f * t) +
+      0.06 * Math.sin(2 * Math.PI * 5 * f * t);
     let env = Math.exp(-2.2 * t);
     if (i < attackSamples) env *= i / attackSamples;
     v.setInt16(44 + i * 2, Math.round((wave / 1.93) * 28000 * env), true);
@@ -179,7 +379,12 @@ function parseWAVSamples(bytes: Uint8Array): Int16Array | null {
   if (riff !== "RIFF" || wave !== "WAVE") return null;
   let offset = 12;
   while (offset + 8 <= bytes.length) {
-    const id = String.fromCharCode(bytes[offset], bytes[offset+1], bytes[offset+2], bytes[offset+3]);
+    const id = String.fromCharCode(
+      bytes[offset],
+      bytes[offset + 1],
+      bytes[offset + 2],
+      bytes[offset + 3],
+    );
     const dv = new DataView(bytes.buffer, bytes.byteOffset + offset + 4, 4);
     const chunkSize = dv.getUint32(0, true);
     if (id === "data") {
@@ -201,8 +406,8 @@ function parseWAVSamples(bytes: Uint8Array): Int16Array | null {
  */
 function detectPitch(samples: Int16Array, sampleRate: number): number | null {
   const WINDOW = 2048;
-  const MIN_FREQ = 35;   // below bass Low E (41 Hz)
-  const MAX_FREQ = 700;  // above violin High E (659 Hz)
+  const MIN_FREQ = 35; // below bass Low E (41 Hz)
+  const MAX_FREQ = 700; // above violin High E (659 Hz)
   const MIN_LAG = Math.floor(sampleRate / MAX_FREQ);
   const MAX_LAG = Math.ceil(sampleRate / MIN_FREQ);
 
@@ -221,19 +426,25 @@ function detectPitch(samples: Int16Array, sampleRate: number): number | null {
   let bestLag = -1;
   let bestVal = -Infinity;
   for (let lag = MIN_LAG; lag <= MAX_LAG; lag++) {
-    let num = 0, den = 0;
+    let num = 0,
+      den = 0;
     for (let i = 0; i < WINDOW - lag; i++) {
       num += s[i] * s[i + lag];
       den += s[i] * s[i] + s[i + lag] * s[i + lag];
     }
-    const nsdf = den > 0 ? 2 * num / den : 0;
-    if (nsdf > bestVal) { bestVal = nsdf; bestLag = lag; }
+    const nsdf = den > 0 ? (2 * num) / den : 0;
+    if (nsdf > bestVal) {
+      bestVal = nsdf;
+      bestLag = lag;
+    }
   }
 
   if (bestLag < 0 || bestVal < 0.4) return null;
 
   if (bestLag > MIN_LAG && bestLag < MAX_LAG) {
-    let prev = 0, curr = 0, next = 0;
+    let prev = 0,
+      curr = 0,
+      next = 0;
     for (let i = 0; i < WINDOW - bestLag; i++) {
       prev += s[i] * s[i + bestLag - 1];
       curr += s[i] * s[i + bestLag];
@@ -249,10 +460,15 @@ function frequencyToCents(detected: number, target: number): number {
   return 1200 * Math.log2(detected / target);
 }
 
-function findNearestString(freq: number, strings: InstrumentString[]): InstrumentString {
+function findNearestString(
+  freq: number,
+  strings: InstrumentString[],
+): InstrumentString {
   return strings.reduce((best, s) =>
     Math.abs(frequencyToCents(freq, s.frequency)) <
-    Math.abs(frequencyToCents(freq, best.frequency)) ? s : best
+    Math.abs(frequencyToCents(freq, best.frequency))
+      ? s
+      : best,
   );
 }
 
@@ -262,7 +478,7 @@ const CENTS_RANGE = 50;
 
 function centsColor(cents: number): string {
   const abs = Math.abs(cents);
-  if (abs <= 5)  return "#4CAF75";
+  if (abs <= 5) return "#4CAF75";
   if (abs <= 15) return "#E8C44B";
   return "#E84B6E";
 }
@@ -277,7 +493,9 @@ export default function TunerScreen() {
   const isLandscape = width > height;
 
   // ── Instrument ──
-  const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(INSTRUMENTS[0]);
+  const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(
+    INSTRUMENTS[0],
+  );
   const instrumentRef = useRef<Instrument>(INSTRUMENTS[0]);
 
   // ── Mode ──
@@ -297,13 +515,17 @@ export default function TunerScreen() {
   const [listening, setListening] = useState(false);
   const [detectedFreq, setDetectedFreq] = useState<number | null>(null);
   const [centsOff, setCentsOff] = useState<number | null>(null);
-  const [nearestString, setNearestString] = useState<InstrumentString | null>(null);
+  const [nearestString, setNearestString] = useState<InstrumentString | null>(
+    null,
+  );
   const [permissionDenied, setPermissionDenied] = useState(false);
   const isRunningRef = useRef(false);
   const loopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Selected string (null = auto-detect nearest) ──
-  const [selectedString, setSelectedString] = useState<InstrumentString | null>(null);
+  const [selectedString, setSelectedString] = useState<InstrumentString | null>(
+    null,
+  );
   const selectedStringRef = useRef<InstrumentString | null>(null);
   useEffect(() => {
     selectedStringRef.current = selectedString;
@@ -365,7 +587,10 @@ export default function TunerScreen() {
   }
 
   function tuneAll() {
-    if (tuningAll) { stopTuneAll(); return; }
+    if (tuningAll) {
+      stopTuneAll();
+      return;
+    }
     if (!tonesReady) return;
     setTuningAll(true);
     selectedInstrument.strings.forEach((s, i) => {
@@ -386,7 +611,11 @@ export default function TunerScreen() {
       const file = new File(uri);
       const bytes = await file.bytes();
       const samples = parseWAVSamples(bytes);
-      if (!samples) { setDetectedFreq(null); setCentsOff(null); return; }
+      if (!samples) {
+        setDetectedFreq(null);
+        setCentsOff(null);
+        return;
+      }
 
       const freq = detectPitch(samples, SAMPLE_RATE);
       if (freq === null) {
@@ -396,7 +625,9 @@ export default function TunerScreen() {
         return;
       }
 
-      const target = selectedStringRef.current ?? findNearestString(freq, instrumentRef.current.strings);
+      const target =
+        selectedStringRef.current ??
+        findNearestString(freq, instrumentRef.current.strings);
       const cents = frequencyToCents(freq, target.frequency);
       setDetectedFreq(freq);
       setNearestString(target);
@@ -430,7 +661,10 @@ export default function TunerScreen() {
 
   async function startListening() {
     const perm = await requestRecordingPermissionsAsync();
-    if (!perm.granted) { setPermissionDenied(true); return; }
+    if (!perm.granted) {
+      setPermissionDenied(true);
+      return;
+    }
     setPermissionDenied(false);
     await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
     isRunningRef.current = true;
@@ -448,7 +682,10 @@ export default function TunerScreen() {
     try {
       if (recorder.isRecording) await recorder.stop();
     } catch {}
-    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+    await setAudioModeAsync({
+      allowsRecording: false,
+      playsInSilentMode: true,
+    });
   }
 
   function switchMode(next: Mode) {
@@ -460,24 +697,46 @@ export default function TunerScreen() {
   const toggleBg = isLight ? "#E2DBCC" : COLOURS.primaryPurple;
 
   const inTune = centsOff !== null && Math.abs(centsOff) <= 5;
-  const needlePercent = centsOff !== null
-    ? Math.max(0, Math.min(1, (Math.min(Math.max(centsOff, -CENTS_RANGE), CENTS_RANGE) + CENTS_RANGE) / (CENTS_RANGE * 2)))
-    : 0.5;
+  const needlePercent =
+    centsOff !== null
+      ? Math.max(
+          0,
+          Math.min(
+            1,
+            (Math.min(Math.max(centsOff, -CENTS_RANGE), CENTS_RANGE) +
+              CENTS_RANGE) /
+              (CENTS_RANGE * 2),
+          ),
+        )
+      : 0.5;
   const tunerColor = centsOff !== null ? centsColor(centsOff) : colors.border;
-  const tunerStatus =
-    !listening              ? "Tap listen to start"
-    : detectedFreq === null ? "Pluck a string…"
-    : inTune                ? "In Tune!"
-    : (centsOff ?? 0) < 0  ? "Tune Up (Flat)"
-                            : "Tune Down (Sharp)";
+  const tunerStatus = !listening
+    ? "Tap listen to start"
+    : detectedFreq === null
+      ? "Pluck a string…"
+      : inTune
+        ? "In Tune!"
+        : (centsOff ?? 0) < 0
+          ? "Tune Up (Flat)"
+          : "Tune Down (Sharp)";
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }, isLandscape && styles.containerLandscape]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.background },
+        isLandscape && styles.containerLandscape,
+      ]}
     >
       {/* Header */}
       <View style={[styles.header, isLandscape && styles.headerLandscape]}>
-        <Text style={[styles.title, { color: colors.title }, isLandscape && styles.titleLandscape]}>
+        <Text
+          style={[
+            styles.title,
+            { color: colors.title },
+            isLandscape && styles.titleLandscape,
+          ]}
+        >
           Tuner
         </Text>
         <Text style={[styles.subtitle, { color: colors.subtitle }]}>
@@ -499,16 +758,32 @@ export default function TunerScreen() {
               key={inst.id}
               style={[
                 styles.instrChip,
-                { borderColor: isActive ? COLOURS.brightYellow : colors.border },
+                {
+                  borderColor: isActive ? COLOURS.brightYellow : colors.border,
+                },
                 isActive && { backgroundColor: COLOURS.brightYellow },
               ]}
               onPress={() => selectInstrument(inst)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.instrChipName, { color: isActive ? COLOURS.darkBackground : colors.title }]}>
+              <Text
+                style={[
+                  styles.instrChipName,
+                  { color: isActive ? COLOURS.darkBackground : colors.title },
+                ]}
+              >
                 {inst.name}
               </Text>
-              <Text style={[styles.instrChipTuning, { color: isActive ? COLOURS.darkBackground + "BB" : colors.subtitle }]}>
+              <Text
+                style={[
+                  styles.instrChipTuning,
+                  {
+                    color: isActive
+                      ? COLOURS.darkBackground + "BB"
+                      : colors.subtitle,
+                  },
+                ]}
+              >
                 {inst.tuning}
               </Text>
             </TouchableOpacity>
@@ -523,7 +798,13 @@ export default function TunerScreen() {
           onPress={() => switchMode("reference")}
           activeOpacity={0.8}
         >
-          <Text style={[styles.modeBtnTxt, { color: COLOURS.lightPurple }, mode === "reference" && styles.modeBtnTxtActive]}>
+          <Text
+            style={[
+              styles.modeBtnTxt,
+              { color: COLOURS.lightPurple },
+              mode === "reference" && styles.modeBtnTxtActive,
+            ]}
+          >
             Reference
           </Text>
         </TouchableOpacity>
@@ -532,7 +813,13 @@ export default function TunerScreen() {
           onPress={() => switchMode("tune")}
           activeOpacity={0.8}
         >
-          <Text style={[styles.modeBtnTxt, { color: COLOURS.lightPurple }, mode === "tune" && styles.modeBtnTxtActive]}>
+          <Text
+            style={[
+              styles.modeBtnTxt,
+              { color: COLOURS.lightPurple },
+              mode === "tune" && styles.modeBtnTxtActive,
+            ]}
+          >
             Listen &amp; Tune
           </Text>
         </TouchableOpacity>
@@ -541,7 +828,10 @@ export default function TunerScreen() {
       {mode === "reference" ? (
         /* ── REFERENCE MODE ── */
         <ScrollView
-          contentContainerStyle={[styles.content, { paddingBottom: isLandscape ? 74 : 104 }]}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: isLandscape ? 74 : 104 },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.topRow}>
@@ -549,13 +839,33 @@ export default function TunerScreen() {
               {tonesReady ? "Tap a string to hear it" : "Loading tones…"}
             </Text>
             <TouchableOpacity
-              style={[styles.tuneAllBtn, { borderColor: tuningAll ? COLOURS.brightYellow : colors.border }, tuningAll && { backgroundColor: "rgba(249,239,189,0.12)" }]}
+              style={[
+                styles.tuneAllBtn,
+                {
+                  borderColor: tuningAll ? COLOURS.brightYellow : colors.border,
+                },
+                tuningAll && { backgroundColor: "rgba(249,239,189,0.12)" },
+              ]}
               onPress={tuneAll}
               disabled={!tonesReady}
               activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel={
+                tuningAll ? "Stop tune all" : "Tune all strings"
+              }
+              accessibilityHint="Plays reference tones for each string in sequence"
             >
-              <Ionicons name={tuningAll ? "stop" : "play"} size={13} color={tuningAll ? COLOURS.brightYellow : colors.subtitle} />
-              <Text style={[styles.tuneAllTxt, { color: tuningAll ? COLOURS.brightYellow : colors.subtitle }]}>
+              <Ionicons
+                name={tuningAll ? "stop" : "play"}
+                size={13}
+                color={tuningAll ? COLOURS.brightYellow : colors.subtitle}
+              />
+              <Text
+                style={[
+                  styles.tuneAllTxt,
+                  { color: tuningAll ? COLOURS.brightYellow : colors.subtitle },
+                ]}
+              >
                 {tuningAll ? "Stop" : "Tune All"}
               </Text>
             </TouchableOpacity>
@@ -566,33 +876,95 @@ export default function TunerScreen() {
             return (
               <TouchableOpacity
                 key={s.string}
-                style={[styles.stringCard, { backgroundColor: cardBg }, isPlaying && { backgroundColor: s.color + "18", borderColor: s.color, borderWidth: 1.5 }]}
+                style={[
+                  styles.stringCard,
+                  { backgroundColor: cardBg },
+                  isPlaying && {
+                    backgroundColor: s.color + "18",
+                    borderColor: s.color,
+                    borderWidth: 1.5,
+                  },
+                ]}
                 onPress={() => playString(s.string)}
                 activeOpacity={0.75}
                 disabled={!tonesReady}
               >
-                <View style={[styles.stringBadge, { backgroundColor: s.color + "22", borderColor: s.color + "55" }]}>
-                  <Text style={[styles.stringNum, { color: s.color }]}>{s.string}</Text>
+                <View
+                  style={[
+                    styles.stringBadge,
+                    {
+                      backgroundColor: s.color + "22",
+                      borderColor: s.color + "55",
+                    },
+                  ]}
+                >
+                  <Text style={[styles.stringNum, { color: s.color }]}>
+                    {s.string}
+                  </Text>
                 </View>
                 <View style={styles.stringLineWrap}>
-                  <View style={[styles.stringLine, { height: s.thickness, backgroundColor: isPlaying ? s.color : s.color + "88", borderRadius: s.thickness / 2 }]} />
+                  <View
+                    style={[
+                      styles.stringLine,
+                      {
+                        height: s.thickness,
+                        backgroundColor: isPlaying ? s.color : s.color + "88",
+                        borderRadius: s.thickness / 2,
+                      },
+                    ]}
+                  />
                 </View>
                 <View style={styles.noteInfo}>
-                  <Text style={[styles.noteName, { color: isPlaying ? s.color : colors.title }]}>
-                    {s.note}<Text style={[styles.noteOctave, { color: colors.subtitle }]}>{s.octave}</Text>
+                  <Text
+                    style={[
+                      styles.noteName,
+                      { color: isPlaying ? s.color : colors.title },
+                    ]}
+                  >
+                    {s.note}
+                    <Text
+                      style={[styles.noteOctave, { color: colors.subtitle }]}
+                    >
+                      {s.octave}
+                    </Text>
                   </Text>
-                  <Text style={[styles.noteLabel, { color: colors.subtitle }]}>{s.label}</Text>
+                  <Text style={[styles.noteLabel, { color: colors.subtitle }]}>
+                    {s.label}
+                  </Text>
                 </View>
                 <View style={styles.rightCol}>
-                  <Text style={[styles.freqText, { color: colors.subtitle }]}>{s.frequency.toFixed(2)} Hz</Text>
-                  <Ionicons name={isPlaying ? "volume-high" : "volume-medium-outline"} size={16} color={isPlaying ? s.color : s.color + "77"} />
+                  <Text style={[styles.freqText, { color: colors.subtitle }]}>
+                    {s.frequency.toFixed(2)} Hz
+                  </Text>
+                  <Ionicons
+                    name={isPlaying ? "volume-high" : "volume-medium-outline"}
+                    size={16}
+                    color={isPlaying ? s.color : s.color + "77"}
+                  />
                 </View>
               </TouchableOpacity>
             );
           })}
 
-          <View style={[styles.tipCard, { backgroundColor: isLight ? "rgba(78,76,127,0.08)" : "rgba(168,170,214,0.08)", borderColor: isLight ? COLOURS.primaryPurple + "33" : COLOURS.lightPurple + "33" }]}>
-            <Ionicons name="information-circle-outline" size={16} color={colors.subtitle} style={{ marginTop: 1 }} />
+          <View
+            style={[
+              styles.tipCard,
+              {
+                backgroundColor: isLight
+                  ? "rgba(78,76,127,0.08)"
+                  : "rgba(168,170,214,0.08)",
+                borderColor: isLight
+                  ? COLOURS.primaryPurple + "33"
+                  : COLOURS.lightPurple + "33",
+              },
+            ]}
+          >
+            <Ionicons
+              name="information-circle-outline"
+              size={16}
+              color={colors.subtitle}
+              style={{ marginTop: 1 }}
+            />
             <Text style={[styles.tipText, { color: colors.subtitle }]}>
               Play each string and tune it until it matches the reference tone.
             </Text>
@@ -604,11 +976,24 @@ export default function TunerScreen() {
           {/* String selector */}
           <View style={styles.selectorRow}>
             <TouchableOpacity
-              style={[styles.selectorChip, selectedString === null && styles.selectorChipAutoActive]}
+              style={[
+                styles.selectorChip,
+                selectedString === null && styles.selectorChipAutoActive,
+              ]}
               onPress={() => setSelectedString(null)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.selectorChipTxt, { color: selectedString === null ? COLOURS.darkBackground : colors.subtitle }]}>
+              <Text
+                style={[
+                  styles.selectorChipTxt,
+                  {
+                    color:
+                      selectedString === null
+                        ? COLOURS.darkBackground
+                        : colors.subtitle,
+                  },
+                ]}
+              >
                 Auto
               </Text>
             </TouchableOpacity>
@@ -620,15 +1005,32 @@ export default function TunerScreen() {
                   style={[
                     styles.selectorChip,
                     { borderColor: s.color + "66" },
-                    isSelected && { backgroundColor: s.color, borderColor: s.color },
+                    isSelected && {
+                      backgroundColor: s.color,
+                      borderColor: s.color,
+                    },
                   ]}
                   onPress={() => setSelectedString(isSelected ? null : s)}
                   activeOpacity={0.75}
                 >
-                  <Text style={[styles.selectorChipNum, { color: isSelected ? "#fff" : s.color }]}>
+                  <Text
+                    style={[
+                      styles.selectorChipNum,
+                      { color: isSelected ? "#fff" : s.color },
+                    ]}
+                  >
                     {s.string}
                   </Text>
-                  <Text style={[styles.selectorChipNote, { color: isSelected ? "rgba(255,255,255,0.75)" : s.color + "AA" }]}>
+                  <Text
+                    style={[
+                      styles.selectorChipNote,
+                      {
+                        color: isSelected
+                          ? "rgba(255,255,255,0.75)"
+                          : s.color + "AA",
+                      },
+                    ]}
+                  >
                     {s.note}
                   </Text>
                 </TouchableOpacity>
@@ -637,19 +1039,36 @@ export default function TunerScreen() {
           </View>
 
           {/* Tuner display card — listen button lives inside */}
-          <View style={[styles.tunerCard, { backgroundColor: COLOURS.primaryPurple }]}>
-
+          <View
+            style={[
+              styles.tunerCard,
+              { backgroundColor: COLOURS.primaryPurple },
+            ]}
+          >
             {/* Detected note */}
-            <Text style={[styles.tunerNote, { color: nearestString ? nearestString.color : COLOURS.lightPurple }]}>
+            <Text
+              style={[
+                styles.tunerNote,
+                {
+                  color: nearestString
+                    ? nearestString.color
+                    : COLOURS.lightPurple,
+                },
+              ]}
+            >
               {nearestString ? nearestString.note : "—"}
               {nearestString && (
-                <Text style={[styles.tunerOctave, { color: COLOURS.lightPurple }]}>
+                <Text
+                  style={[styles.tunerOctave, { color: COLOURS.lightPurple }]}
+                >
                   {nearestString.octave}
                 </Text>
               )}
             </Text>
 
-            <Text style={[styles.tunerStringLabel, { color: COLOURS.lightPurple }]}>
+            <Text
+              style={[styles.tunerStringLabel, { color: COLOURS.lightPurple }]}
+            >
               {selectedString
                 ? `String ${selectedString.string} · ${selectedString.label} (locked)`
                 : nearestString
@@ -659,7 +1078,12 @@ export default function TunerScreen() {
 
             {/* Cents meter */}
             <View style={styles.meterWrap}>
-              <View style={[styles.meterTrack, { backgroundColor: "rgba(255,255,255,0.12)" }]}>
+              <View
+                style={[
+                  styles.meterTrack,
+                  { backgroundColor: "rgba(255,255,255,0.12)" },
+                ]}
+              >
                 <View style={styles.meterCentre} />
                 {centsOff !== null && (
                   <View
@@ -679,26 +1103,41 @@ export default function TunerScreen() {
                 )}
               </View>
               <View style={styles.meterLabels}>
-                <Text style={[styles.meterLabel, { color: COLOURS.lightPurple }]}>♭ Flat</Text>
-                <Text style={[styles.meterLabel, { color: COLOURS.lightPurple }]}>Sharp ♯</Text>
+                <Text
+                  style={[styles.meterLabel, { color: COLOURS.lightPurple }]}
+                >
+                  ♭ Flat
+                </Text>
+                <Text
+                  style={[styles.meterLabel, { color: COLOURS.lightPurple }]}
+                >
+                  Sharp ♯
+                </Text>
               </View>
             </View>
 
             {/* Status + cents value */}
             <View style={styles.tunerStatusRow}>
-              <Text style={[styles.tunerStatus, { color: inTune ? "#4CAF75" : COLOURS.brightYellow }]}>
+              <Text
+                style={[
+                  styles.tunerStatus,
+                  { color: inTune ? "#4CAF75" : COLOURS.brightYellow },
+                ]}
+              >
                 {tunerStatus}
               </Text>
               {centsOff !== null && (
                 <Text style={[styles.tunerCents, { color: tunerColor }]}>
-                  {centsOff > 0 ? "+" : ""}{centsOff.toFixed(1)} ¢
+                  {centsOff > 0 ? "+" : ""}
+                  {centsOff.toFixed(1)} ¢
                 </Text>
               )}
             </View>
 
             {detectedFreq !== null && (
               <Text style={[styles.tunerFreq, { color: COLOURS.lightPurple }]}>
-                {detectedFreq.toFixed(1)} Hz · target {nearestString?.frequency.toFixed(2)} Hz
+                {detectedFreq.toFixed(1)} Hz · target{" "}
+                {nearestString?.frequency.toFixed(2)} Hz
               </Text>
             )}
 
@@ -707,6 +1146,11 @@ export default function TunerScreen() {
               style={[styles.listenBtn, listening && styles.listenBtnActive]}
               onPress={listening ? stopListening : startListening}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={
+                listening ? "Stop listening" : "Start listening"
+              }
+              accessibilityHint="Starts or stops microphone tuning mode"
             >
               <Ionicons
                 name={listening ? "stop-circle" : "mic"}
@@ -721,8 +1165,22 @@ export default function TunerScreen() {
 
           {/* Permission denied warning */}
           {permissionDenied && (
-            <View style={[styles.tipCard, { backgroundColor: "#E84B6E22", borderColor: "#E84B6E55", marginTop: 10 }]}>
-              <Ionicons name="warning-outline" size={16} color="#E84B6E" style={{ marginTop: 1 }} />
+            <View
+              style={[
+                styles.tipCard,
+                {
+                  backgroundColor: "#E84B6E22",
+                  borderColor: "#E84B6E55",
+                  marginTop: 10,
+                },
+              ]}
+            >
+              <Ionicons
+                name="warning-outline"
+                size={16}
+                color="#E84B6E"
+                style={{ marginTop: 1 }}
+              />
               <Text style={[styles.tipText, { color: colors.title }]}>
                 Microphone permission is required. Please enable it in Settings.
               </Text>
@@ -741,7 +1199,13 @@ const styles = StyleSheet.create({
   containerLandscape: { paddingHorizontal: 18 },
 
   header: { marginTop: 12, marginBottom: 8 },
-  headerLandscape: { marginTop: 10, marginBottom: 8, flexDirection: "row", alignItems: "baseline", gap: 12 },
+  headerLandscape: {
+    marginTop: 10,
+    marginBottom: 8,
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 12,
+  },
   title: { fontSize: 48, fontFamily: "WinkyMilky", letterSpacing: 1 },
   titleLandscape: { fontSize: 34 },
   subtitle: { fontSize: 16, fontFamily: "Inter_400Regular", marginTop: 4 },
@@ -757,25 +1221,72 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   instrChipName: { fontFamily: "Inter_700Bold", fontSize: 13 },
-  instrChipTuning: { fontFamily: "Inter_400Regular", fontSize: 11, marginTop: 1 },
+  instrChipTuning: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 11,
+    marginTop: 1,
+  },
 
   // Mode toggle
-  modeToggle: { flexDirection: "row", borderRadius: 16, padding: 4, marginBottom: 12 },
-  modeBtn: { flex: 1, paddingVertical: 8, borderRadius: 12, alignItems: "center" },
+  modeToggle: {
+    flexDirection: "row",
+    borderRadius: 16,
+    padding: 4,
+    marginBottom: 12,
+  },
+  modeBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 12,
+    alignItems: "center",
+  },
   modeBtnActive: { backgroundColor: COLOURS.brightYellow },
   modeBtnTxt: { fontFamily: "Inter_600SemiBold", fontSize: 14 },
   modeBtnTxtActive: { color: COLOURS.darkBackground },
 
   content: { paddingTop: 2 },
 
-  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 },
-  sectionLabel: { fontFamily: "Inter_600SemiBold", fontSize: 12, letterSpacing: 1.2, textTransform: "uppercase" },
-  tuneAllBtn: { flexDirection: "row", alignItems: "center", gap: 5, borderWidth: 1.5, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6 },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  sectionLabel: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  tuneAllBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    borderWidth: 1.5,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
   tuneAllTxt: { fontFamily: "Inter_600SemiBold", fontSize: 12 },
 
   // String cards (reference mode)
-  stringCard: { flexDirection: "row", alignItems: "center", borderRadius: 14, marginBottom: 6, paddingVertical: 9, paddingHorizontal: 12, gap: 10 },
-  stringBadge: { width: 28, height: 28, borderRadius: 8, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
+  stringCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 14,
+    marginBottom: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    gap: 10,
+  },
+  stringBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   stringNum: { fontFamily: "Inter_700Bold", fontSize: 12 },
   stringLineWrap: { width: 32, justifyContent: "center", alignItems: "center" },
   stringLine: { width: "100%" },
@@ -791,37 +1302,129 @@ const styles = StyleSheet.create({
 
   // String selector chips
   selectorRow: { flexDirection: "row", gap: 6, marginBottom: 12 },
-  selectorChip: { borderWidth: 1.5, borderColor: "rgba(168,170,214,0.4)", borderRadius: 20, paddingHorizontal: 8, paddingVertical: 5, alignItems: "center", flex: 1 },
-  selectorChipAutoActive: { backgroundColor: COLOURS.brightYellow, borderColor: COLOURS.brightYellow },
+  selectorChip: {
+    borderWidth: 1.5,
+    borderColor: "rgba(168,170,214,0.4)",
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    alignItems: "center",
+    flex: 1,
+  },
+  selectorChipAutoActive: {
+    backgroundColor: COLOURS.brightYellow,
+    borderColor: COLOURS.brightYellow,
+  },
   selectorChipTxt: { fontFamily: "Inter_600SemiBold", fontSize: 12 },
-  selectorChipNum: { fontFamily: "Inter_700Bold", fontSize: 13, lineHeight: 16 },
-  selectorChipNote: { fontFamily: "Inter_400Regular", fontSize: 10, lineHeight: 13 },
+  selectorChipNum: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 13,
+    lineHeight: 16,
+  },
+  selectorChipNote: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 10,
+    lineHeight: 13,
+  },
 
   // Tuner card
-  tunerCard: { borderRadius: 24, padding: 16, alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 8 },
+  tunerCard: {
+    borderRadius: 24,
+    padding: 16,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    elevation: 8,
+  },
   tunerNote: { fontFamily: "WinkyMilky", fontSize: 58, lineHeight: 66 },
   tunerOctave: { fontFamily: "Inter_400Regular", fontSize: 20 },
-  tunerStringLabel: { fontFamily: "Inter_400Regular", fontSize: 13, marginTop: 2, marginBottom: 12 },
+  tunerStringLabel: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    marginTop: 2,
+    marginBottom: 12,
+  },
 
   // Cents meter
   meterWrap: { width: "100%", marginBottom: 10 },
-  meterTrack: { height: 12, borderRadius: 6, position: "relative", justifyContent: "center", marginBottom: 6 },
-  meterCentre: { position: "absolute", left: "50%", width: 2, height: 20, marginTop: -4, marginLeft: -1, backgroundColor: "rgba(255,255,255,0.4)", borderRadius: 1 },
-  meterNeedle: { position: "absolute", width: 4, height: 28, borderRadius: 2, marginTop: -8, marginLeft: -2, top: "50%" },
+  meterTrack: {
+    height: 12,
+    borderRadius: 6,
+    position: "relative",
+    justifyContent: "center",
+    marginBottom: 6,
+  },
+  meterCentre: {
+    position: "absolute",
+    left: "50%",
+    width: 2,
+    height: 20,
+    marginTop: -4,
+    marginLeft: -1,
+    backgroundColor: "rgba(255,255,255,0.4)",
+    borderRadius: 1,
+  },
+  meterNeedle: {
+    position: "absolute",
+    width: 4,
+    height: 28,
+    borderRadius: 2,
+    marginTop: -8,
+    marginLeft: -2,
+    top: "50%",
+  },
   meterLabels: { flexDirection: "row", justifyContent: "space-between" },
   meterLabel: { fontFamily: "Inter_400Regular", fontSize: 11 },
 
-  tunerStatusRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 6 },
+  tunerStatusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 6,
+  },
   tunerStatus: { fontFamily: "Inter_700Bold", fontSize: 15 },
   tunerCents: { fontFamily: "Inter_600SemiBold", fontSize: 13 },
-  tunerFreq: { fontFamily: "Inter_400Regular", fontSize: 12, marginTop: 2, marginBottom: 4 },
+  tunerFreq: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 12,
+    marginTop: 2,
+    marginBottom: 4,
+  },
 
   // Listen button (inside the card)
-  listenBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: COLOURS.brightYellow, borderRadius: 18, paddingVertical: 14, marginTop: 12, width: "100%" },
+  listenBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: COLOURS.brightYellow,
+    borderRadius: 18,
+    paddingVertical: 14,
+    marginTop: 12,
+    width: "100%",
+  },
   listenBtnActive: { backgroundColor: "#E84B6E" },
-  listenBtnTxt: { fontFamily: "Inter_700Bold", fontSize: 16, color: COLOURS.darkBackground },
+  listenBtnTxt: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 16,
+    color: COLOURS.darkBackground,
+  },
 
   // Tip / warning card
-  tipCard: { flexDirection: "row", gap: 10, borderWidth: 1, borderRadius: 16, padding: 14, marginTop: 6 },
-  tipText: { flex: 1, fontFamily: "Inter_400Regular", fontSize: 13, lineHeight: 20 },
+  tipCard: {
+    flexDirection: "row",
+    gap: 10,
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 6,
+  },
+  tipText: {
+    flex: 1,
+    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    lineHeight: 20,
+  },
 });
